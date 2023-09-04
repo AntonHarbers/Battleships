@@ -1,0 +1,24 @@
+{
+  "name": "odin-project-battleships",
+  "version": "1.0.0",
+  "description": "A battleships game made for the odin project using TDD with javascript, html and css",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AntonHarbers/odin-battleships.git"
+  },
+  "author": "Anton Harbers",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AntonHarbers/odin-battleships/issues"
+  },
+  "homepage": "https://github.com/AntonHarbers/odin-battleships#readme",
+  "devDependencies": {
+    "@babel/preset-env": "^7.22.15",
+    "babel-jest": "^29.6.4",
+    "jest": "^29.6.4"
+  }
+}
