@@ -146,3 +146,46 @@ describe('Gameboard class', () => {
     });
   });
 });
+
+describe('Player Class', () => {
+  test('#constructor', () => {
+    const player1 = new Player('Test', true);
+    expect(player1.name).toBe('Test');
+    expect(player1.isTurn).toBe(true);
+    expect(player1.coordinatesAttacked).toEqual([]);
+    expect(player1.activeShips).toEqual([]);
+    expect(player1.ships[0].name).toBe('Carrier');
+  })
+
+  describe('#makeRandomMove', () => {  
+    test('Cannot make the same move multiple times', () => {
+      const board = new Gameboard();
+      const player = new Player('Test', true, board);
+      const notTurnPlayer = new Player('Test1', false, board);
+      const attack1 = player.attackCoordinates(1,1);
+      const attack2 = player.attackCoordinates(1,1);
+      const notTurnAttack = notTurnPlayer.attackCoordinates(1,1);
+
+      expect(attack1).toBe(true);
+      expect(attack2).toBe(false);
+      expect(notTurnAttack).toBe(false);
+    });
+
+    test('When making a move that hits a ship make sure ship takes a hit', () => {
+      const board = new Gameboard();
+      const player = new Player('Tester', true, board);
+      board.placeShip('Destroyer', 2, 5,5,true);
+      expect(board.ships[0].hits).toBe(0);
+      player.attackCoordinates(5,5);
+      expect(board.ships[0].hits).toBe(1);
+    });
+
+    test('When making a move that does not hit a ship make sure its added to the missed hits array', () => {
+      const board = new Gameboard();
+      const player = new Player('Tester', true, board);
+      expect(board.missedAttacks).toEqual([]);
+      player.attackCoordinates(1,2);
+      expect(board.missedAttacks).toEqual([[1,2]]);
+    });
+  });
+});

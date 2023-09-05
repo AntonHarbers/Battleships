@@ -1,3 +1,5 @@
+const gridSize = 10;
+
 class Ship {
   constructor(name, length) {
     (this.name = name),
@@ -23,16 +25,15 @@ class Gameboard {
     this.board = new Array();
     this.ships = [];
     this.sunkShips = [];
-    this.gridSize = 10;
     this.hitAttacks = [];
     this.missedAttacks = [];
     this.initBoard();
   }
 
   initBoard() {
-    for (var x = 0; x < this.gridSize; x++) {
+    for (var x = 0; x < gridSize; x++) {
       this.board[x] = [];
-      for (var y = 0; y < this.gridSize; y++) {
+      for (var y = 0; y < gridSize; y++) {
         this.board[x][y] = 'Empty';
       }
     }
@@ -90,10 +91,9 @@ class Gameboard {
   allShipsSunk() {
     let allSunk = this.ships.length === 0 ? false : true;
 
-
     this.ships.forEach((ship) => {
       if (!ship.sunk) {
-        console.log('issue')
+        console.log('issue');
         allSunk = false;
       }
     });
@@ -102,7 +102,49 @@ class Gameboard {
   }
 }
 
-class Player {}
+class Player {
+  constructor(name, isTurn, gameboard) {
+    this.name = name;
+    this.isTurn = isTurn;
+    this.gameboard = gameboard;
+    this.ships = [
+      new Ship('Carrier', 5),
+      new Ship('Battleship', 4),
+      new Ship('Cruiser', 3),
+      new Ship('Submarine', 2),
+      new Ship('Destroyer', 2),
+    ];
+    this.activeShips = [];
+    this.coordinatesAttacked = [];
+  }
 
+  makeRandomMove(){
+    let attackWorked = false;
+
+    while(!attackWorked){
+      const test = this.attackCoordinates(Math.floor(Math.random(0,gridSize)), Math.floor(Math.random(0,gridSize)));
+      attackWorked = test;
+    }
+  }
+
+  attackCoordinates(x, y) {
+    if (!this.isTurn) return false;
+    let newCoordinates = true;
+
+    this.coordinatesAttacked.forEach((coordinate) => {
+      if (x === coordinate[0] && y === coordinate[1]) {
+        newCoordinates = false;
+      } 
+    });
+
+    if(!newCoordinates) return false;
+
+    this.coordinatesAttacked.push([x, y]);
+    this.gameboard.receiveAttack(x,y);
+    return true;
+  }
+
+
+}
 
 export { Ship, Gameboard, Player };
