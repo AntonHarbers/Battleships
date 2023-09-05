@@ -7,7 +7,40 @@
     <link rel="stylesheet" href="./styles/styles.css">
 </head>
 <body>
-    <h1>Battleships</h1>
+    <div id="container">
+        <section id="menu-screen">
+            <h1>Odin Battleships</h1>
+            <div id="menu-buttons">
+                <input placeholder="Enter your name..." type="text" id="player-name-input"></input>
+                <button id="start-game-btn">Start Game</button>
+            </div>
+        </section>
+        <section id="game-screen">
+            <div id="game-board">
+                <div id="player-board">
+                    <h2>Player Board</h2>
+                    <h3 id="player-name-stat"></h3>
+                    <div id="player-grid" class="grid"></div>
+                </div>
+                <div id="computer-board">
+                    <h2>Computer Board</h2>
+                    <div id="computer-grid" class="grid"></div>
+                </div>
+            </div>
+            <div id="game-info">
+                <div id="player-info">
+                    <h2>Player Info</h2>
+                    <div id="player-ships"></div>
+                    <div id="player-turn"></div>
+                </div>
+                <div id="computer-info">
+                    <h2>Computer Info</h2>
+                    <div id="computer-ships"></div>
+                    <div id="computer-turn"></div>
+                </div>
+            </div>
+        </section>
+    </div>
 </body>
 <script type="module" src="battleships.js"></script>
 </html>

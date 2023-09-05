@@ -1,4 +1,18 @@
 const gridSize = 10;
+const shipNames = [
+  "Carrier",
+  "Battleship",
+  "Cruiser",
+  "Submarine",
+  "Destroyer",
+];
+const shipLengths = [5, 4, 3, 2, 2];
+
+const startGameButton = document.querySelector("#start-game-btn");
+const menuScreen = document.querySelector("#menu-screen");
+const gameScreen = document.querySelector("#game-screen");
+const playerNameInput = document.querySelector("#player-name-input");
+const playerNameStat = document.querySelector("#player-name-stat");
 
 class Ship {
   constructor(name, length) {
@@ -34,7 +48,7 @@ class Gameboard {
     for (var x = 0; x < gridSize; x++) {
       this.board[x] = [];
       for (var y = 0; y < gridSize; y++) {
-        this.board[x][y] = 'Empty';
+        this.board[x][y] = "Empty";
       }
     }
   }
@@ -43,7 +57,7 @@ class Gameboard {
     for (var t = 0; t < length; t++) {
       if (
         this.board[isHorizontal ? x : x + t][isHorizontal ? y + t : y] !==
-        'Empty'
+        "Empty"
       ) {
         return false;
       }
@@ -77,8 +91,8 @@ class Gameboard {
 
     if (hasAlreadyHitPosition) return false;
 
-    if (this.board[x][y] !== 'Empty') {
-      console.log('hit');
+    if (this.board[x][y] !== "Empty") {
+      console.log("hit");
       this.hitAttacks.push([x, y]);
       this.board[x][y].hit();
     } else {
@@ -93,7 +107,7 @@ class Gameboard {
 
     this.ships.forEach((ship) => {
       if (!ship.sunk) {
-        console.log('issue');
+        console.log("issue");
         allSunk = false;
       }
     });
@@ -108,23 +122,28 @@ class Player {
     this.isTurn = isTurn;
     this.gameboard = gameboard;
     this.ships = [
-      new Ship('Carrier', 5),
-      new Ship('Battleship', 4),
-      new Ship('Cruiser', 3),
-      new Ship('Submarine', 2),
-      new Ship('Destroyer', 2),
+      new Ship("Carrier", 5),
+      new Ship("Battleship", 4),
+      new Ship("Cruiser", 3),
+      new Ship("Submarine", 2),
+      new Ship("Destroyer", 2),
     ];
     this.activeShips = [];
     this.coordinatesAttacked = [];
   }
 
-  makeRandomMove(){
+  makeRandomMove() {
     let attackWorked = false;
 
-    while(!attackWorked){
-      const test = this.attackCoordinates(Math.floor(Math.random(0,gridSize)), Math.floor(Math.random(0,gridSize)));
+    while (!attackWorked) {
+      const test = this.attackCoordinates(
+        Math.floor(Math.random(0, gridSize)),
+        Math.floor(Math.random(0, gridSize))
+      );
       attackWorked = test;
     }
+
+    return true;
   }
 
   attackCoordinates(x, y) {
@@ -134,17 +153,42 @@ class Player {
     this.coordinatesAttacked.forEach((coordinate) => {
       if (x === coordinate[0] && y === coordinate[1]) {
         newCoordinates = false;
-      } 
+      }
     });
 
-    if(!newCoordinates) return false;
+    if (!newCoordinates) return false;
 
     this.coordinatesAttacked.push([x, y]);
-    this.gameboard.receiveAttack(x,y);
+    this.gameboard.receiveAttack(x, y);
     return true;
   }
-
-
 }
+
+let player1 = null;
+let player2 = null;
+let player1board = null;
+let player2board = null;
+
+startGameButton.addEventListener("click", () => {
+  StartGame();
+});
+
+const StartGame = () => {
+  if(playerNameInput.value == ""){
+    alert("Please enter a name");
+    return;
+  }
+
+  player1 = new Player(playerNameInput.value , true, new Gameboard());
+  playerNameStat.textContent = player1.name;
+  player2 = new Player("Test2", false, new Gameboard());
+
+  player1board = new Gameboard();
+  player2board = new Gameboard();
+  
+  menuScreen.style.display = "none";
+  gameScreen.style.display = "flex";
+
+};
 
 export { Ship, Gameboard, Player };
