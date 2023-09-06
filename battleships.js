@@ -14,6 +14,12 @@ const gameScreen = document.querySelector("#game-screen");
 const playerNameInput = document.querySelector("#player-name-input");
 const playerNameStat = document.querySelector("#player-name-stat");
 
+const playerGrid = document.querySelector('#player-grid');
+const computerGrid = document.querySelector('#computer-grid');
+
+const playerTurnDiv = document.getElementById('player-turn');
+const computerTurnDiv = document.getElementById('computer-turn');
+
 class Ship {
   constructor(name, length) {
     (this.name = name),
@@ -35,13 +41,16 @@ class Ship {
 }
 
 class Gameboard {
-  constructor() {
+  constructor(isComputer, ownerPlayer) {
+    this.owner = ownerPlayer;
     this.board = new Array();
+    this.isComputer = isComputer;
     this.ships = [];
     this.sunkShips = [];
     this.hitAttacks = [];
     this.missedAttacks = [];
     this.initBoard();
+    this.renderBoard();
   }
 
   initBoard() {
@@ -49,6 +58,26 @@ class Gameboard {
       this.board[x] = [];
       for (var y = 0; y < gridSize; y++) {
         this.board[x][y] = "Empty";
+      }
+    }
+  }
+
+  renderBoard(){
+    for(var x = 0; x < gridSize; x++){
+      for(var y = 0; y < gridSize; y++){
+        const newSquare = document.createElement('div');
+        newSquare.id = `${x},${y}`;
+        
+        if(this.isComputer){
+          newSquare.classList.add('computerSquare')
+          newSquare.addEventListener('click', () => {
+            squareEvent(newSquare, this.owner);
+          })
+        }else{
+          newSquare.classList.add('playerSquare');
+        }
+
+        this.isComputer ? computerGrid.appendChild(newSquare) : playerGrid.appendChild(newSquare);
       }
     }
   }
@@ -179,16 +208,38 @@ const StartGame = () => {
     return;
   }
 
-  player1 = new Player(playerNameInput.value , true, new Gameboard());
-  playerNameStat.textContent = player1.name;
-  player2 = new Player("Test2", false, new Gameboard());
+  player1board = new Gameboard(false);
+  player2board = new Gameboard(true);
 
-  player1board = new Gameboard();
-  player2board = new Gameboard();
+  player1 = new Player(playerNameInput.value , true, player1board);
+  playerNameStat.textContent = player1.name;
+  player2 = new Player("Test2", false, player2board);
+
+  player1board.owner = player1;
+  player2board.owner = player2;
   
   menuScreen.style.display = "none";
   gameScreen.style.display = "flex";
 
+  updateTurnUi();
 };
+
+const squareEvent = (square, owner) => {
+  // check that player who is not owner is clicking
+  console.log(square.id)
+  console.log(owner.name)
+  updateTurnUi();
+}
+
+const updateTurnUi = () => {
+
+  if(player1.isTurn){
+    playerTurnDiv.hidden = false;
+    computerTurnDiv.hidden = true;
+  }else{
+    computerTurnDiv.hidden = true;
+    playerTurnDiv.hidden = false;
+  }
+}
 
 export { Ship, Gameboard, Player };
