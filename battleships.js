@@ -50,7 +50,6 @@ class Gameboard {
     this.hitAttacks = [];
     this.missedAttacks = [];
     this.initBoard();
-    this.renderBoard();
   }
 
   initBoard() {
@@ -71,7 +70,7 @@ class Gameboard {
         if(this.isComputer){
           newSquare.classList.add('computerSquare')
           newSquare.addEventListener('click', () => {
-            squareEvent(newSquare, this.owner);
+            squareEvent(newSquare, this.owner, x, y);
           })
         }else{
           newSquare.classList.add('playerSquare');
@@ -166,8 +165,8 @@ class Player {
 
     while (!attackWorked) {
       const test = this.attackCoordinates(
-        Math.floor(Math.random(0, gridSize)),
-        Math.floor(Math.random(0, gridSize))
+        Math.floor(Math.random() * gridSize),
+        Math.floor(Math.random() * gridSize)
       );
       attackWorked = test;
     }
@@ -221,13 +220,26 @@ const StartGame = () => {
   menuScreen.style.display = "none";
   gameScreen.style.display = "flex";
 
+  player1board.renderBoard();
+  player2board.renderBoard();
+
+  spawnShipsRandomly(player1board, player2);
+  spawnShipsRandomly(player2board, player1);
+
+  console.log(player1board.board);
+  console.log(player2board.board);
+
   updateTurnUi();
 };
 
-const squareEvent = (square, owner) => {
+const squareEvent = (square, owner, x, y) => {
   // check that player who is not owner is clicking
   console.log(square.id)
   console.log(owner.name)
+
+  if(owner.name =! player1.name){
+    console.log(player2board.board[x][y]);
+  }
   updateTurnUi();
 }
 
@@ -240,6 +252,56 @@ const updateTurnUi = () => {
     computerTurnDiv.hidden = true;
     playerTurnDiv.hidden = false;
   }
+}
+
+const spawnShipsRandomly = (gameboard, player) => {
+  player.ships.forEach((ship => {
+    // place the ship on the gameboard randomly within the bounds of the board
+    const placeHorizontal = Math.random() * 10 >= 5 ? true : false;
+    let x = 0;
+    let y = 0;
+
+    const coordinates = findFreeSpot(gameboard.board, placeHorizontal, ship)
+
+    gameboard.placeShip(ship.name, ship.length, coordinates[0], coordinates[1], placeHorizontal);
+    // add ship to the players placed ships array
+
+    player.activeShips.push(ship)
+
+    // after this forloop empty the ships array
+  }))
+
+  player.ships = [];
+}
+
+const findFreeSpot = (board, placeHorizontal, ship) =>{
+  let freeSpotFound = true;
+  let x = 0;
+  let y = 0;
+
+  while(freeSpotFound){
+    y = Math.floor(Math.random() * gridSize);
+    x = Math.floor(Math.random() * (gridSize - ship.length));
+
+    if(placeHorizontal){
+      for(var i = 0 ; i < ship.length ; i++){
+        if(board[x+i][y] != 'Empty'){
+          freeSpotFound = false;
+        }
+      }
+    }else{
+      for(var i = 0 ; i < ship.length ; i++){
+        if(board[x][y+i] != 'Empty'){
+          freeSpotFound = false;
+        }
+      }
+    }
+  }
+
+  console.log([x,y]);
+
+  return [x,y]
+
 }
 
 export { Ship, Gameboard, Player };
