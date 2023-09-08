@@ -1,24 +1,9 @@
-const gridSize = 10;
-const shipNames = [
-  "Carrier",
-  "Battleship",
-  "Cruiser",
-  "Submarine",
-  "Destroyer",
-];
-const shipLengths = [5, 4, 3, 2, 2];
-
-const startGameButton = document.querySelector("#start-game-btn");
-const menuScreen = document.querySelector("#menu-screen");
-const gameScreen = document.querySelector("#game-screen");
-const playerNameInput = document.querySelector("#player-name-input");
-const playerNameStat = document.querySelector("#player-name-stat");
+import { squareEvent } from "./script.js";
 
 const playerGrid = document.querySelector('#player-grid');
 const computerGrid = document.querySelector('#computer-grid');
 
-const playerTurnDiv = document.getElementById('player-turn');
-const computerTurnDiv = document.getElementById('computer-turn');
+const gridSize = 10;
 
 class Ship {
   constructor(name, length) {
@@ -41,8 +26,7 @@ class Ship {
 }
 
 class Gameboard {
-  constructor(isComputer, ownerPlayer) {
-    this.owner = ownerPlayer;
+  constructor(isComputer) {
     this.board = new Array();
     this.isComputer = isComputer;
     this.ships = [];
@@ -70,7 +54,7 @@ class Gameboard {
         if(this.isComputer){
           newSquare.classList.add('computerSquare')
           newSquare.addEventListener('click', () => {
-            squareEvent(newSquare, this.owner, x, y);
+            squareEvent(newSquare, this.isComputer, x, y);
           })
         }else{
           newSquare.classList.add('playerSquare');
@@ -190,118 +174,6 @@ class Player {
     this.gameboard.receiveAttack(x, y);
     return true;
   }
-}
-
-let player1 = null;
-let player2 = null;
-let player1board = null;
-let player2board = null;
-
-startGameButton.addEventListener("click", () => {
-  StartGame();
-});
-
-const StartGame = () => {
-  if(playerNameInput.value == ""){
-    alert("Please enter a name");
-    return;
-  }
-
-  player1board = new Gameboard(false);
-  player2board = new Gameboard(true);
-
-  player1 = new Player(playerNameInput.value , true, player1board);
-  playerNameStat.textContent = player1.name;
-  player2 = new Player("Test2", false, player2board);
-
-  player1board.owner = player1;
-  player2board.owner = player2;
-  
-  menuScreen.style.display = "none";
-  gameScreen.style.display = "flex";
-
-  player1board.renderBoard();
-  player2board.renderBoard();
-
-  spawnShipsRandomly(player1board, player2);
-  spawnShipsRandomly(player2board, player1);
-
-  console.log(player1board.board);
-  console.log(player2board.board);
-
-  updateTurnUi();
-};
-
-const squareEvent = (square, owner, x, y) => {
-  // check that player who is not owner is clicking
-  console.log(square.id)
-  console.log(owner.name)
-
-  if(owner.name =! player1.name){
-    console.log(player2board.board[x][y]);
-  }
-  updateTurnUi();
-}
-
-const updateTurnUi = () => {
-
-  if(player1.isTurn){
-    playerTurnDiv.hidden = false;
-    computerTurnDiv.hidden = true;
-  }else{
-    computerTurnDiv.hidden = true;
-    playerTurnDiv.hidden = false;
-  }
-}
-
-const spawnShipsRandomly = (gameboard, player) => {
-  player.ships.forEach((ship => {
-    // place the ship on the gameboard randomly within the bounds of the board
-    const placeHorizontal = Math.random() * 10 >= 5 ? true : false;
-    let x = 0;
-    let y = 0;
-
-    const coordinates = findFreeSpot(gameboard.board, placeHorizontal, ship)
-
-    gameboard.placeShip(ship.name, ship.length, coordinates[0], coordinates[1], placeHorizontal);
-    // add ship to the players placed ships array
-
-    player.activeShips.push(ship)
-
-    // after this forloop empty the ships array
-  }))
-
-  player.ships = [];
-}
-
-const findFreeSpot = (board, placeHorizontal, ship) =>{
-  let freeSpotFound = true;
-  let x = 0;
-  let y = 0;
-
-  while(freeSpotFound){
-    y = Math.floor(Math.random() * gridSize);
-    x = Math.floor(Math.random() * (gridSize - ship.length));
-
-    if(placeHorizontal){
-      for(var i = 0 ; i < ship.length ; i++){
-        if(board[x+i][y] != 'Empty'){
-          freeSpotFound = false;
-        }
-      }
-    }else{
-      for(var i = 0 ; i < ship.length ; i++){
-        if(board[x][y+i] != 'Empty'){
-          freeSpotFound = false;
-        }
-      }
-    }
-  }
-
-  console.log([x,y]);
-
-  return [x,y]
-
 }
 
 export { Ship, Gameboard, Player };
