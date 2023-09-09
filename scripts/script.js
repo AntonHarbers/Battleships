@@ -1,19 +1,4 @@
-import { Ship, Gameboard, Player } from './battleships.js';
-
-const gridSize = 10;
-const shipNames = [
-    'Carrier',
-    'Battleship',
-    'Cruiser',
-    'Submarine',
-    'Destroyer',
-  ];
-  const shipLengths = [5, 4, 3, 2, 2];
-
-let player1 = null;
-let player2 = null;
-let player1board = null;
-let player2board = null;
+import { Ship, Gameboard, Player, gridSize } from './battleships.js';
 
 const playerTurnDiv = document.getElementById('player-turn');
 const computerTurnDiv = document.getElementById('computer-turn');
@@ -23,10 +8,24 @@ const gameScreen = document.querySelector('#game-screen');
 const playerNameInput = document.querySelector('#player-name-input');
 const playerNameStat = document.querySelector('#player-name-stat');
 
+const shipNames = [
+  'Carrier',
+  'Battleship',
+  'Cruiser',
+  'Submarine',
+  'Destroyer',
+];
+const shipLengths = [5, 4, 3, 2, 2];
+
+const player1board = new Gameboard(false);
+const player2board = new Gameboard(true);
+
+const player1 = new Player(playerNameInput.value, true, player1board);;
+const player2 = new Player('Computer', false, player2board);;
+
 startGameButton.addEventListener('click', () => {
-    StartGame();
-  });
-  
+  StartGame();
+});
 
 const StartGame = () => {
   if (playerNameInput.value == '') {
@@ -34,12 +33,8 @@ const StartGame = () => {
     return;
   }
 
-  player1board = new Gameboard(false);
-  player2board = new Gameboard(true);
-
-  player1 = new Player(playerNameInput.value, true, player1board);
+  player1.name = playerNameInput.value;
   playerNameStat.textContent = player1.name;
-  player2 = new Player('Computer', false, player2board);
 
   menuScreen.style.display = 'none';
   gameScreen.style.display = 'flex';
@@ -58,7 +53,12 @@ const squareEvent = (square, isComputer, x, y) => {
   console.log(square.id);
   console.log(isComputer);
 
+  let coordinates = square.id.split(",");
+  x = parseInt(coordinates[0]);
+  y = parseInt(coordinates[1]);
+
   if (isComputer) {
+    console.log(player2board);
     console.log(player2board.board[x][y]);
   }
   updateTurnUi();
@@ -101,21 +101,24 @@ const spawnShipsRandomly = (gameboard, player) => {
 };
 
 const findFreeSpot = (board, placeHorizontal, ship) => {
-  let freeSpotFound = true;
+  let freeSpotFound = false;
   let x = 0;
   let y = 0;
 
-  while (freeSpotFound) {
-    y = Math.floor(Math.random() * gridSize);
-    x = Math.floor(Math.random() * (gridSize - ship.length));
-
+  while (!freeSpotFound) {
     if (placeHorizontal) {
+      y = Math.floor(Math.random() * gridSize);
+      x = Math.floor(Math.random() * (gridSize - ship.length));
+      freeSpotFound = true;
       for (var i = 0; i < ship.length; i++) {
         if (board[x + i][y] != 'Empty') {
           freeSpotFound = false;
         }
       }
     } else {
+      y = Math.floor(Math.random() * (gridSize - ship.length));
+      x = Math.floor(Math.random() * gridSize);
+      freeSpotFound = true;
       for (var i = 0; i < ship.length; i++) {
         if (board[x][y + i] != 'Empty') {
           freeSpotFound = false;

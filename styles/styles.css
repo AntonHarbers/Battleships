@@ -91,6 +91,20 @@ button:hover {
   flex-grow: 1;
 }
 
+#player-info{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#computer-info{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .board{
   display: flex;
   flex-direction: column;

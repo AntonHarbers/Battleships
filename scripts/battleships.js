@@ -54,7 +54,7 @@ class Gameboard {
         if(this.isComputer){
           newSquare.classList.add('computerSquare')
           newSquare.addEventListener('click', () => {
-            squareEvent(newSquare, this.isComputer, x, y);
+            squareEvent(newSquare, this.isComputer);
           })
         }else{
           newSquare.classList.add('playerSquare');
@@ -176,4 +176,4 @@ class Player {
   }
 }
 
-export { Ship, Gameboard, Player };
+export { Ship, Gameboard, Player, gridSize };
