@@ -1,8 +1,3 @@
-// import { squareEvent } from './script.js';
-
-// const playerGrid = document.querySelector('#player-grid');
-// const computerGrid = document.querySelector('#computer-grid');
-
 const gridSize = 10;
 
 class Ship {
@@ -141,5 +136,5 @@ class Player {
   }
 }
 
-// export { Ship, Gameboard, Player, gridSize };
-module.exports = { Ship, Gameboard, Player, gridSize };
+export { Ship, Gameboard, Player, gridSize };
+// module.exports = { Ship, Gameboard, Player, gridSize };
