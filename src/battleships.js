@@ -1,4 +1,4 @@
-const gridSize = 10;
+import { gridSize } from './vars';
 
 class Ship {
   constructor(name, length) {
