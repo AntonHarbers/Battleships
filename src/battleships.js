@@ -1,7 +1,7 @@
-import { squareEvent } from "./script.js";
+// import { squareEvent } from './script.js';
 
-const playerGrid = document.querySelector('#player-grid');
-const computerGrid = document.querySelector('#computer-grid');
+// const playerGrid = document.querySelector('#player-grid');
+// const computerGrid = document.querySelector('#computer-grid');
 
 const gridSize = 10;
 
@@ -40,27 +40,7 @@ class Gameboard {
     for (var x = 0; x < gridSize; x++) {
       this.board[x] = [];
       for (var y = 0; y < gridSize; y++) {
-        this.board[x][y] = "Empty";
-      }
-    }
-  }
-
-  renderBoard(){
-    for(var x = 0; x < gridSize; x++){
-      for(var y = 0; y < gridSize; y++){
-        const newSquare = document.createElement('div');
-        newSquare.id = `${x},${y}`;
-        
-        if(this.isComputer){
-          newSquare.classList.add('computerSquare')
-          newSquare.addEventListener('click', () => {
-            squareEvent(newSquare, this.isComputer);
-          })
-        }else{
-          newSquare.classList.add('playerSquare');
-        }
-
-        this.isComputer ? computerGrid.appendChild(newSquare) : playerGrid.appendChild(newSquare);
+        this.board[x][y] = 'Empty';
       }
     }
   }
@@ -68,17 +48,16 @@ class Gameboard {
   placeShip(name, length, x, y, isHorizontal) {
     for (var t = 0; t < length; t++) {
       if (
-        this.board[isHorizontal ? x : x + t][isHorizontal ? y + t : y] !==
-        "Empty"
+        this.board[isHorizontal ? x + t : x][isHorizontal ? y : y + t] !==
+        'Empty'
       ) {
         return false;
       }
     }
+
     this.ships.push(new Ship(name, length));
 
-    this.board[x][y] = this.ships[this.ships.length - 1];
-
-    for (var i = 1; i < length; i++) {
+    for (var i = 0; i < length; i++) {
       this.board[isHorizontal ? x : x + i][isHorizontal ? y + i : y] =
         this.ships[this.ships.length - 1];
     }
@@ -103,8 +82,8 @@ class Gameboard {
 
     if (hasAlreadyHitPosition) return false;
 
-    if (this.board[x][y] !== "Empty") {
-      console.log("hit");
+    if (this.board[x][y] !== 'Empty') {
+      console.log('hit');
       this.hitAttacks.push([x, y]);
       this.board[x][y].hit();
     } else {
@@ -119,7 +98,7 @@ class Gameboard {
 
     this.ships.forEach((ship) => {
       if (!ship.sunk) {
-        console.log("issue");
+        console.log('issue');
         allSunk = false;
       }
     });
@@ -134,28 +113,14 @@ class Player {
     this.isTurn = isTurn;
     this.gameboard = gameboard;
     this.ships = [
-      new Ship("Carrier", 5),
-      new Ship("Battleship", 4),
-      new Ship("Cruiser", 3),
-      new Ship("Submarine", 2),
-      new Ship("Destroyer", 2),
+      new Ship('Carrier', 5),
+      new Ship('Battleship', 4),
+      new Ship('Cruiser', 3),
+      new Ship('Submarine', 2),
+      new Ship('Destroyer', 2),
     ];
     this.activeShips = [];
     this.coordinatesAttacked = [];
-  }
-
-  makeRandomMove() {
-    let attackWorked = false;
-
-    while (!attackWorked) {
-      const test = this.attackCoordinates(
-        Math.floor(Math.random() * gridSize),
-        Math.floor(Math.random() * gridSize)
-      );
-      attackWorked = test;
-    }
-
-    return true;
   }
 
   attackCoordinates(x, y) {
@@ -176,4 +141,5 @@ class Player {
   }
 }
 
-export { Ship, Gameboard, Player, gridSize };
+// export { Ship, Gameboard, Player, gridSize };
+module.exports = { Ship, Gameboard, Player, gridSize };
