@@ -10,6 +10,8 @@ import {
   playerNameStat,
   playerBoard,
   computerBoard,
+  playerShipSelect,
+  playerShipRotationBtn,
   gridSize,
 } from "./vars.js";
 
@@ -21,9 +23,30 @@ const player2 = new Player("Computer", false, player2board);
 
 playerNameInput.value = "Tony";
 
+let shipPlacementPhase = false;
+let shipRotationHorizontal = true;
+
 startGameButton.addEventListener("click", () => {
   StartGame();
 });
+
+playerShipRotationBtn.addEventListener("click", () => {
+  changeShipRotation();
+});
+
+document.addEventListener("keydown", (e) => {
+  if(e.key == "r"){
+    if(shipPlacementPhase){
+      changeShipRotation();
+    }
+  }
+})
+
+const changeShipRotation = () => {
+  shipRotationHorizontal = !shipRotationHorizontal;
+
+  playerShipRotationBtn.textContent = `Rotation: ${shipRotationHorizontal ? "Horizontal":"Vertical"}`
+}
 
 const StartGame = () => {
   if (playerNameInput.value == "") {
@@ -37,16 +60,22 @@ const StartGame = () => {
   gameScreen.style.display = "flex";
 
   renderBoards();
+  // place computers ships randomly
   placeShipsRandomly(player2, true);
 
-  console.log(player2board)
+  // start player ships placement phase
+  player1.ships.forEach((ship) => {
+    const option = document.createElement('option');
+    option.text = ship.name;
+    playerShipSelect.add(option);
+  })
+
+  shipPlacementPhase = true;
 };
 
 // render boards
 
 const renderBoards = () => {
-  // clear board renders
-
   playerBoard.innerHTML = "";
   computerBoard.innerHTML = "";
 
@@ -78,27 +107,33 @@ const placeShipsRandomly = (player, isComputer) => {
   player.ships.forEach((ship, index) => {
     const coordinates = findPossibleShipCoordinates(player.gameboard, ship);
     let element = null;
-    let squareClass = isComputer ? "computerSquare" : "playerSquare"
+    let squareClass = isComputer ? "computerSquare" : "playerSquare";
 
     for (var i = 0; i < ship.length; i++) {
       if (coordinates[2]) {
-
-        player.gameboard.board[coordinates[0] + i][coordinates[1]] = ship.name
+        player.gameboard.board[coordinates[0] + i][coordinates[1]] = ship.name;
         // is horizontal
         element = document.querySelector(
-          `[data-x="${coordinates[0] + i}"][data-y="${coordinates[1]}"].${squareClass}`
+          `[data-x="${coordinates[0] + i}"][data-y="${
+            coordinates[1]
+          }"].${squareClass}`
         );
       } else {
-        player.gameboard.board[coordinates[0]][coordinates[1] + i] = ship.name
+        player.gameboard.board[coordinates[0]][coordinates[1] + i] = ship.name;
 
         // is vertical
         element = document.querySelector(
-          `[data-x="${coordinates[0]}"][data-y="${coordinates[1] + i}"].${squareClass}`
+          `[data-x="${coordinates[0]}"][data-y="${
+            coordinates[1] + i
+          }"].${squareClass}`
         );
       }
+
       // element.classList.add("red");
     }
+    player.activeShips.push(ship);
   });
+  player.ships = [];
 };
 
 const findPossibleShipCoordinates = (board, ship) => {
@@ -132,7 +167,13 @@ const findPossibleShipCoordinates = (board, ship) => {
     }
   }
 
-
-
   return [x, y, isHorizontal];
 };
+
+const placeShipDuringPlacementPhase = (player) => {
+  if(shipPlacementPhase){
+
+  }else{
+    return;
+  }
+}
