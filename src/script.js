@@ -71,6 +71,46 @@ const StartGame = () => {
   })
 
   shipPlacementPhase = true;
+  const playerSquares = document.querySelectorAll(".playerSquare");
+  console.log(playerSquares)
+
+  playerSquares.forEach((square) => {
+    const x = square.getAttribute('data-x');
+    const y = square.getAttribute('data-y');
+
+    square.addEventListener('mouseenter', () => {
+      // figure out the length of the currently selected ship option
+      let length = 0;
+      player1.ships.forEach((ship) => {
+        if(ship.name == playerShipSelect.value){
+          length = ship.length;
+        }
+      })
+      // highlight all the coordinates that would be occupied by the correct ship vertically or horizontally
+      //TODO THIS ONLY WORKS FOR THE FIRST LINE - CHECK WHY?
+      while(length > 0){
+        const squareInShip = document.querySelector(
+          `[data-x="${shipRotationHorizontal ? x + length - 1 : x}"][data-y="${
+            shipRotationHorizontal ? y : y + length - 1
+          }"].playerSquare`)
+          squareInShip.classList.add('red');
+          console.log(squareInShip)
+        length--;
+      }
+    })
+
+    // on mouse down if this is a possible location for the selected ship
+    // remove that ship from dropdown
+    // add that ship to players active ships
+    // remove that ship from players ships
+    // remove all event listeners, or just make them doable if ship placement phase is true
+
+    square.addEventListener('mouseleave', () => {
+      playerSquares.forEach((square)=> {
+        square.classList.remove('red');
+      })
+    })
+  })
 };
 
 // render boards

@@ -144,4 +144,9 @@ button:hover {
 
 .red {
   background-color: red;
+  cursor: pointer;
+}
+
+.shipHover{
+  background-color: green;
 }
