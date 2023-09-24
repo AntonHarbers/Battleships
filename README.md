@@ -4,6 +4,7 @@ Test driven development practice implementing the battleships game using javascr
 
 [Live Link](https://www.google.com)
 
+// WORK ON THE RECEIVE ATTACK LOGIC next ime
 
 // game phase
 
@@ -19,5 +20,10 @@ Test driven development practice implementing the battleships game using javascr
             if it has sunk:
 
     // computer turn
+        check if last turn was a hit
+            // if it was try and hit an adjacent coordinate
+        // check if the last two turns was a hit
+            // if it was try and hit an adjacent coordinate in the same direction as the last two hits
+        // otherwise pick a random one out of those that have not yet been attacked
 
 once the final ship is placed the game will begin

@@ -28,6 +28,7 @@ class Gameboard {
     this.sunkShips = [];
     this.hitAttacks = [];
     this.missedAttacks = [];
+    this.notYetAttacked = [];
     this.initBoard();
   }
 
@@ -36,6 +37,7 @@ class Gameboard {
       this.board[x] = [];
       for (var y = 0; y < gridSize; y++) {
         this.board[x][y] = 'Empty';
+        this.notYetAttacked.push([x,y]);
       }
     }
   }
@@ -65,29 +67,26 @@ class Gameboard {
   }
 
   receiveAttack(x, y) {
-    let hasAlreadyHitPosition = false;
-    this.hitAttacks.forEach((e) => {
-      if (e[0] == x && e[1] == y) {
-        hasAlreadyHitPosition = true;
-      }
-    });
+    let hasAlreadyHitPosition;
 
-    this.missedAttacks.forEach((e) => {
-      console.log(e);
-      if (e[0] == x && e[1] == y) {
-        hasAlreadyHitPosition = true;
-      }
-    });
+    this.notYetAttacked.includes([x,y]) ? hasAlreadyHitPosition = false : hasAlreadyHitPosition = true;
 
     if (hasAlreadyHitPosition) return false;
 
+    console.log(this.notYetAttacked)
+
     if (this.board[x][y] !== 'Empty') {
-      console.log('hit');
       this.hitAttacks.push([x, y]);
       this.board[x][y].hit();
     } else {
       this.missedAttacks.push([x, y]);
+      this.board[x][y] = "Missed"
     }
+
+    this.notYetAttacked = this.notYetAttacked.filter((item) => {
+      item != [x,y]
+    })
+
 
     return true;
   }
@@ -107,10 +106,11 @@ class Gameboard {
 }
 
 class Player {
-  constructor(name, isTurn, gameboard) {
+  constructor(name, isTurn, gameboard, enemyBoard) {
     this.name = name;
     this.isTurn = isTurn;
     this.gameboard = gameboard;
+    this.enemyBoard = enemyBoard;
     this.ships = [
       new Ship('Carrier', 5),
       new Ship('Battleship', 4),
@@ -135,7 +135,7 @@ class Player {
     if (!newCoordinates) return false;
 
     this.coordinatesAttacked.push([x, y]);
-    this.gameboard.receiveAttack(x, y);
+    this.enemyBoard.receiveAttack(x, y);
     return true;
   }
 }

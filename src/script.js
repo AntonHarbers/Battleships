@@ -18,8 +18,8 @@ import {
 const player1board = new Gameboard(false);
 const player2board = new Gameboard(true);
 
-const player1 = new Player(playerNameInput.value, true, player1board);
-const player2 = new Player("Computer", false, player2board);
+const player1 = new Player(playerNameInput.value, true, player1board, player2board);
+const player2 = new Player("Computer", false, player2board, player1board);
 
 let playerSquares = [];
 let computerSquares = [];
@@ -30,6 +30,9 @@ let shipPlacementPhase = false;
 let gamePhase = false;
 let isPlayerTurn = false;
 let shipRotationHorizontal = true;
+
+let hitLastMove = false;
+let hitLastTwoMoves = false;
 
 startGameButton.addEventListener("click", () => {
   StartGame();
@@ -94,7 +97,7 @@ const StartGame = () => {
     const y = parseInt(square.getAttribute("data-y"));
 
     square.addEventListener("mouseenter", () => {
-      if(!shipPlacementPhase) return;
+      if (!shipPlacementPhase) return;
       // figure out the length of the currently selected ship option
       let length;
       player1.ships.forEach((ship) => {
@@ -120,7 +123,7 @@ const StartGame = () => {
     });
 
     square.addEventListener("mousedown", () => {
-      if(!shipPlacementPhase) return;
+      if (!shipPlacementPhase) return;
 
       let length;
       let shipIndex;
@@ -151,7 +154,13 @@ const StartGame = () => {
 
       const placedShip = player1.ships.splice(shipIndex, 1);
       player1.activeShips.push(placedShip);
-      player1board.placeShip(placedShip.name, placedShip.length, x, y, shipRotationHorizontal)
+      player1board.placeShip(
+        placedShip.name,
+        placedShip.length,
+        x,
+        y,
+        shipRotationHorizontal
+      );
 
       if (player1.ships.length == 0) {
         EndPlacementPhase();
@@ -162,7 +171,7 @@ const StartGame = () => {
     });
 
     square.addEventListener("mouseleave", () => {
-      if(!shipPlacementPhase) return;
+      if (!shipPlacementPhase) return;
 
       playerSquares.forEach((square) => {
         square.classList.remove("red");
@@ -174,17 +183,17 @@ const StartGame = () => {
     const x = parseInt(square.getAttribute("data-x"));
     const y = parseInt(square.getAttribute("data-y"));
 
-    square.addEventListener('mousedown', () => {
-      if(!gamePhase) return;
+    square.addEventListener("mousedown", () => {
+      if (!gamePhase) return;
       //if(!isPlayerTurn) return;
 
       // check if its a hit
       // if its a miss make it a miss image
       // if its a hit make it a hit image
-      // when the ship is sunk 
-      console.log(player2.gameboard.board[x][y])
+      // when the ship is sunk
+      console.log(player2.gameboard.board[x][y]);
     });
-  })
+  });
 };
 
 const EndPlacementPhase = () => {
@@ -192,8 +201,59 @@ const EndPlacementPhase = () => {
   playerShipRotationBtn.remove();
   playerShipSelect.remove();
   gamePhase = true;
-  isPlayerTurn = Math.random() * 10 > 5 ? true : false;
-}
+  isPlayerTurn = false//Math.random() * 10 > 5 ? true : false;
+  if (!isPlayerTurn) {
+    player2.isTurn = true;
+    player1.isTurn = false;
+    makeComputerMove();
+  }{
+    player2.isTurn = false;
+    player1.isTurn = true;
+    // player attack ui change
+  }
+};
+
+
+const makeComputerMove = () => {
+  // see if last move was a hit
+  let x;
+  let y;
+
+  if (hitLastMove) {
+    // try and go for an adjacent square
+  } else if (hitLastTwoMoves) {
+    // go into same direction as previous two moves
+  } else {
+    let foundPossibleAttackCoords = false;
+
+    while (!foundPossibleAttackCoords) {
+      x = Math.floor(Math.random() * gridSize);
+      y = Math.floor(Math.random() * gridSize);
+      foundPossibleAttackCoords = true;
+
+      player2.coordinatesAttacked.forEach((coordinate) => {
+        if (coordinate[0] == x && coordinate[1] == y) {
+          foundPossibleAttackCoords = false;
+        }
+      });
+    }
+  }
+
+  // attack that location
+
+  player2.attackCoordinates(x, y);
+  console.log([x,y]);
+  console.log(player2.gameboard.board);
+  console.log(player1.gameboard.board);
+
+  // rerender the ui
+  // play animations and sounds
+  // set all the state
+  // check if ship got sunk?
+
+  // if ship is sunk reset hitlastmove variables
+
+};
 
 const IsPositionFree = (x, y, length) => {
   let checkX = x;
@@ -249,14 +309,19 @@ const renderBoard = (board, isComputer) => {
 const placeShipsRandomly = (player) => {
   player.ships.forEach((ship) => {
     const coordinates = findPossibleShipCoordinates(player.gameboard, ship);
-    
-    player.gameboard.placeShip(ship.name, ship.length, coordinates[0], coordinates[1], coordinates[2])
 
+    player.gameboard.placeShip(
+      ship.name,
+      ship.length,
+      coordinates[0],
+      coordinates[1],
+      coordinates[2]
+    );
 
     player.activeShips.push(ship);
   });
 
-  console.log(player.gameboard)
+  console.log(player.gameboard);
   player.ships = [];
 };
 
@@ -269,18 +334,20 @@ const findPossibleShipCoordinates = (board, ship) => {
   while (!freePositionFound) {
     var isHorizontal = Math.round(Math.random() * 10) > 5 ? true : false;
     freePositionFound = true;
-    x = Math.floor(Math.random() * (isHorizontal ? gridSize - ship.length : gridSize));
-    y = Math.floor(Math.random() * ( isHorizontal ? gridSize : gridSize - ship.length));
+    x = Math.floor(
+      Math.random() * (isHorizontal ? gridSize - ship.length : gridSize)
+    );
+    y = Math.floor(
+      Math.random() * (isHorizontal ? gridSize : gridSize - ship.length)
+    );
 
     if (isHorizontal) {
-
       for (var i = 0; i < ship.length; i++) {
         if (board.board[x + i][y] !== "Empty") {
           freePositionFound = false;
         }
       }
     } else {
-
       for (var i = 0; i < ship.length; i++) {
         if (board.board[x][y + i] !== "Empty") {
           freePositionFound = false;
@@ -291,4 +358,3 @@ const findPossibleShipCoordinates = (board, ship) => {
 
   return [x, y, isHorizontal];
 };
-
