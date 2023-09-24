@@ -5,12 +5,19 @@ Test driven development practice implementing the battleships game using javascr
 [Live Link](https://www.google.com)
 
 
-// before the game begins, the player must place all of his ships:
+// game phase
 
-while a dropdown element is active/selected, when the player hovers over his squares he is shown the possible
-placement of the ship (only show the ship hover if that spot is possible for the ship to be placed). 
+    // first turn is random
 
-when player clicks on one of the possible squares, that ship is placed, removed from the dropdown and added to
-his active ships array. 
+    // player turn
+        player selects a spot on the computers board (spot that has not been tried yet) 
+        if its a hit  
+            turn that square into a hit square
+            update the states of player2s board and rendered board
+            unallow clicking on the square another time
+            check if that ship that was hit has sunk
+            if it has sunk:
+
+    // computer turn
 
 once the final ship is placed the game will begin

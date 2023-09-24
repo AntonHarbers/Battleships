@@ -41,6 +41,7 @@ class Gameboard {
   }
 
   placeShip(name, length, x, y, isHorizontal) {
+    console.log([name, length, x, y, isHorizontal]);
     for (var t = 0; t < length; t++) {
       if (
         this.board[isHorizontal ? x + t : x][isHorizontal ? y : y + t] !==
@@ -53,7 +54,10 @@ class Gameboard {
     this.ships.push(new Ship(name, length));
 
     for (var i = 0; i < length; i++) {
-      this.board[isHorizontal ? x : x + i][isHorizontal ? y + i : y] =
+      console.log(this.board)
+      console.log(isHorizontal ? x : x + i);
+      console.log(this.board[isHorizontal ? x : x + i]);
+      this.board[isHorizontal ? x + i : x][isHorizontal ? y : y + i] =
         this.ships[this.ships.length - 1];
     }
 

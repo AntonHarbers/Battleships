@@ -150,3 +150,7 @@ button:hover {
 .shipHover{
   background-color: green;
 }
+
+.ship{
+  background-color: bisque;
+}
