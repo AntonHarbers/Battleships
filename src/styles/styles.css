@@ -142,10 +142,11 @@ button:hover {
   background-color: blue;
 }
 
-.red {
-  background-color: red;
+.red{
   cursor: pointer;
+  background-color: red;
 }
+
 
 .shipHover{
   background-color: green;
@@ -153,4 +154,13 @@ button:hover {
 
 .ship{
   background-color: bisque;
+}
+
+
+.hit{
+  background-color: red;
+}
+
+.missed{
+  background-color: blueviolet;
 }

@@ -18,7 +18,12 @@ import {
 const player1board = new Gameboard(false);
 const player2board = new Gameboard(true);
 
-const player1 = new Player(playerNameInput.value, true, player1board, player2board);
+const player1 = new Player(
+  playerNameInput.value,
+  true,
+  player1board,
+  player2board
+);
 const player2 = new Player("Computer", false, player2board, player1board);
 
 let playerSquares = [];
@@ -31,8 +36,9 @@ let gamePhase = false;
 let isPlayerTurn = false;
 let shipRotationHorizontal = true;
 
-let hitLastMove = false;
-let hitLastTwoMoves = false;
+let firstShipHitCoords = null;
+let shipHitCoords = null;
+let currentHitDirection = "up";
 
 startGameButton.addEventListener("click", () => {
   StartGame();
@@ -155,8 +161,8 @@ const StartGame = () => {
       const placedShip = player1.ships.splice(shipIndex, 1);
       player1.activeShips.push(placedShip);
       player1board.placeShip(
-        placedShip.name,
-        placedShip.length,
+        placedShip[0].name,
+        placedShip[0].length,
         x,
         y,
         shipRotationHorizontal
@@ -201,28 +207,104 @@ const EndPlacementPhase = () => {
   playerShipRotationBtn.remove();
   playerShipSelect.remove();
   gamePhase = true;
-  isPlayerTurn = false//Math.random() * 10 > 5 ? true : false;
+  isPlayerTurn = false; //Math.random() * 10 > 5 ? true : false;
   if (!isPlayerTurn) {
     player2.isTurn = true;
     player1.isTurn = false;
-    makeComputerMove();
-  }{
+    var index = 0;
+    let incrementEveryHalfSecond = setInterval(function () {
+      index++;
+      makeComputerMove();
+      if (index == 75) clearInterval(incrementEveryHalfSecond);
+    }, 500);
+  } else {
     player2.isTurn = false;
     player1.isTurn = true;
     // player attack ui change
   }
 };
 
-
 const makeComputerMove = () => {
   // see if last move was a hit
   let x;
   let y;
 
-  if (hitLastMove) {
-    // try and go for an adjacent square
-  } else if (hitLastTwoMoves) {
-    // go into same direction as previous two moves
+  if (shipHitCoords !== null) {
+    console.log(shipHitCoords);
+
+    x = shipHitCoords[0];
+    y = shipHitCoords[1];
+
+    let hasFoundGoodAttackCoords = false;
+    let i = 0;
+
+    while (!hasFoundGoodAttackCoords) {
+      i++;
+      if (i > 100) {
+        shipHitCoords = null;
+        firstShipHitCoords = null;
+      }
+      hasFoundGoodAttackCoords = true;
+      switch (currentHitDirection) {
+        case "up":
+          y--;
+          if (
+            y < 0 ||
+            player2.coordinatesAttacked.some(
+              (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
+            )
+          ) {
+            currentHitDirection = "down";
+            y++;
+            hasFoundGoodAttackCoords = false;
+          }
+          break;
+        case "down":
+          y++;
+          if (
+            y >= gridSize ||
+            player2.coordinatesAttacked.some(
+              (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
+            )
+          ) {
+            currentHitDirection = "left";
+            y--;
+            hasFoundGoodAttackCoords = false;
+          }
+          break;
+        case "left":
+          x--;
+          if (
+            x < 0 ||
+            player2.coordinatesAttacked.some(
+              (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
+            )
+          ) {
+            currentHitDirection = "right";
+            x++;
+            hasFoundGoodAttackCoords = false;
+          }
+          break;
+        case "right":
+          x++;
+          if (
+            x >= gridSize ||
+            player2.coordinatesAttacked.some(
+              (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
+            )
+          ) {
+            currentHitDirection = "up";
+            x--;
+            hasFoundGoodAttackCoords = false;
+          }
+          break;
+      }
+
+      if (!hasFoundGoodAttackCoords) {
+        // if we still have not found one then set x and y equal to the first ship hit location
+        shipHitCoords = firstShipHitCoords;
+      }
+    }
   } else {
     let foundPossibleAttackCoords = false;
 
@@ -231,28 +313,62 @@ const makeComputerMove = () => {
       y = Math.floor(Math.random() * gridSize);
       foundPossibleAttackCoords = true;
 
-      player2.coordinatesAttacked.forEach((coordinate) => {
-        if (coordinate[0] == x && coordinate[1] == y) {
-          foundPossibleAttackCoords = false;
-        }
-      });
+      if (
+        player2.coordinatesAttacked.some(
+          (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
+        )
+      ) {
+        foundPossibleAttackCoords = false;
+      }
     }
   }
 
   // attack that location
-
   player2.attackCoordinates(x, y);
-  console.log([x,y]);
-  console.log(player2.gameboard.board);
-  console.log(player1.gameboard.board);
 
-  // rerender the ui
-  // play animations and sounds
-  // set all the state
-  // check if ship got sunk?
+  const squareAttacked = document.querySelector(
+    `[data-x="${x}"][data-y="${y}"].playerSquare`
+  );
 
-  // if ship is sunk reset hitlastmove variables
+  if(player2.enemyBoard.hitAttacks.some(
+    (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
+  )){
+    HandleAttackHit(x,y,squareAttacked);
+  }
 
+  if(player2.enemyBoard.missedAttacks.some(
+    (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
+  )){
+    HandleAttackMiss(x,y,squareAttacked);
+  }
+
+};
+
+const HandleAttackHit = (x, y, squareHit) => {
+  if (firstShipHitCoords == null) firstShipHitCoords = [x, y];
+  shipHitCoords = [x, y];
+
+  squareHit.classList.add("hit");
+
+  if (player2.enemyBoard.board[x][y].sunk) {
+    shipHitCoords = null;
+    const randomDir = Math.random() * 100;
+    if (randomDir > 75) {
+      currentHitDirection = "up";
+    } else if (randomDir <= 75 && randomDir > 50) {
+      currentHitDirection = "down";
+    } else if (randomDir <= 50 && randomDir > 25) {
+      currentHitDirection = "right";
+    } else {
+      currentHitDirection = "left";
+    }
+    firstShipHitCoords = null;
+    // do some sort of animation or something
+  }
+};
+
+const HandleAttackMiss = (x, y, squareMissed) => {
+  squareMissed.classList.add("missed");
 };
 
 const IsPositionFree = (x, y, length) => {
@@ -321,7 +437,6 @@ const placeShipsRandomly = (player) => {
     player.activeShips.push(ship);
   });
 
-  console.log(player.gameboard);
   player.ships = [];
 };
 

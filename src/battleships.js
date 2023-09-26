@@ -1,4 +1,4 @@
-import { gridSize } from './vars';
+import { gridSize } from "./vars";
 
 class Ship {
   constructor(name, length) {
@@ -36,18 +36,17 @@ class Gameboard {
     for (var x = 0; x < gridSize; x++) {
       this.board[x] = [];
       for (var y = 0; y < gridSize; y++) {
-        this.board[x][y] = 'Empty';
-        this.notYetAttacked.push([x,y]);
+        this.board[x][y] = "Empty";
+        this.notYetAttacked.push([x, y]);
       }
     }
   }
 
   placeShip(name, length, x, y, isHorizontal) {
-    console.log([name, length, x, y, isHorizontal]);
     for (var t = 0; t < length; t++) {
       if (
         this.board[isHorizontal ? x + t : x][isHorizontal ? y : y + t] !==
-        'Empty'
+        "Empty"
       ) {
         return false;
       }
@@ -56,9 +55,6 @@ class Gameboard {
     this.ships.push(new Ship(name, length));
 
     for (var i = 0; i < length; i++) {
-      console.log(this.board)
-      console.log(isHorizontal ? x : x + i);
-      console.log(this.board[isHorizontal ? x : x + i]);
       this.board[isHorizontal ? x + i : x][isHorizontal ? y : y + i] =
         this.ships[this.ships.length - 1];
     }
@@ -69,24 +65,25 @@ class Gameboard {
   receiveAttack(x, y) {
     let hasAlreadyHitPosition;
 
-    this.notYetAttacked.includes([x,y]) ? hasAlreadyHitPosition = false : hasAlreadyHitPosition = true;
+    if (this.notYetAttacked.some((e) => e[0] === x && e[1] === y)) {
+      hasAlreadyHitPosition = false;
+    } else {
+      hasAlreadyHitPosition = true;
+    }
 
     if (hasAlreadyHitPosition) return false;
 
-    console.log(this.notYetAttacked)
-
-    if (this.board[x][y] !== 'Empty') {
+    if (this.board[x][y] !== "Empty") {
       this.hitAttacks.push([x, y]);
       this.board[x][y].hit();
     } else {
       this.missedAttacks.push([x, y]);
-      this.board[x][y] = "Missed"
+      this.board[x][y] = "Missed";
     }
 
     this.notYetAttacked = this.notYetAttacked.filter((item) => {
-      item != [x,y]
-    })
-
+      return item[0] !== x || item[1] !== y;
+    });
 
     return true;
   }
@@ -96,7 +93,6 @@ class Gameboard {
 
     this.ships.forEach((ship) => {
       if (!ship.sunk) {
-        console.log('issue');
         allSunk = false;
       }
     });
@@ -112,11 +108,11 @@ class Player {
     this.gameboard = gameboard;
     this.enemyBoard = enemyBoard;
     this.ships = [
-      new Ship('Carrier', 5),
-      new Ship('Battleship', 4),
-      new Ship('Cruiser', 3),
-      new Ship('Submarine', 2),
-      new Ship('Destroyer', 2),
+      new Ship("Carrier", 5),
+      new Ship("Battleship", 4),
+      new Ship("Cruiser", 3),
+      new Ship("Submarine", 2),
+      new Ship("Destroyer", 2),
     ];
     this.activeShips = [];
     this.coordinatesAttacked = [];
