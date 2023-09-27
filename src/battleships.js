@@ -2,10 +2,10 @@ import { gridSize } from "./vars";
 
 class Ship {
   constructor(name, length) {
-    (this.name = name),
-      (this.length = length),
-      (this.hits = 0),
-      (this.sunk = false);
+    this.name = name;
+    this.length = length;
+    this.hits = 0;
+    this.sunk = false;
   }
 
   hit() {
@@ -33,9 +33,9 @@ class Gameboard {
   }
 
   initBoard() {
-    for (var x = 0; x < gridSize; x++) {
+    for (let x = 0; x < gridSize; x++) {
       this.board[x] = [];
-      for (var y = 0; y < gridSize; y++) {
+      for (let y = 0; y < gridSize; y++) {
         this.board[x][y] = "Empty";
         this.notYetAttacked.push([x, y]);
       }
@@ -43,7 +43,7 @@ class Gameboard {
   }
 
   placeShip(name, length, x, y, isHorizontal) {
-    for (var t = 0; t < length; t++) {
+    for (let t = 0; t < length; t++) {
       if (
         this.board[isHorizontal ? x + t : x][isHorizontal ? y : y + t] !==
         "Empty"
@@ -63,13 +63,9 @@ class Gameboard {
   }
 
   receiveAttack(x, y) {
-    let hasAlreadyHitPosition;
-
-    if (this.notYetAttacked.some((e) => e[0] === x && e[1] === y)) {
-      hasAlreadyHitPosition = false;
-    } else {
-      hasAlreadyHitPosition = true;
-    }
+    const hasAlreadyHitPosition = !this.notYetAttacked.some(
+      (e) => e[0] === x && e[1] === y
+    );
 
     if (hasAlreadyHitPosition) return false;
 
@@ -81,23 +77,15 @@ class Gameboard {
       this.board[x][y] = "Missed";
     }
 
-    this.notYetAttacked = this.notYetAttacked.filter((item) => {
-      return item[0] !== x || item[1] !== y;
-    });
+    this.notYetAttacked = this.notYetAttacked.filter(
+      (item) => item[0] !== x || item[1] !== y
+    );
 
     return true;
   }
 
   allShipsSunk() {
-    let allSunk = this.ships.length === 0 ? false : true;
-
-    this.ships.forEach((ship) => {
-      if (!ship.sunk) {
-        allSunk = false;
-      }
-    });
-
-    return allSunk;
+    return this.ships.every((ship) => ship.sunk);
   }
 }
 
@@ -120,13 +108,10 @@ class Player {
 
   attackCoordinates(x, y) {
     if (!this.isTurn) return false;
-    let newCoordinates = true;
 
-    this.coordinatesAttacked.forEach((coordinate) => {
-      if (x === coordinate[0] && y === coordinate[1]) {
-        newCoordinates = false;
-      }
-    });
+    const newCoordinates = !this.coordinatesAttacked.some(
+      (coordinate) => x === coordinate[0] && y === coordinate[1]
+    );
 
     if (!newCoordinates) return false;
 

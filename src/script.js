@@ -226,14 +226,59 @@ const EndPlacementPhase = () => {
 
 const makeComputerMove = () => {
   // see if last move was a hit
-  let x;
-  let y;
+  let attackX;
+  let attackY;
 
   if (shipHitCoords !== null) {
     console.log(shipHitCoords);
 
-    x = shipHitCoords[0];
-    y = shipHitCoords[1];
+    [attackX, attackY] = shipHitCoords;
+
+    const checkAttackCoords = (x, y) => {
+      return (
+        x < 0 ||
+        x >= gridSize ||
+        y < 0 ||
+        y >= gridSize ||
+        player2.coordinatesAttacked.some(
+          (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
+        )
+      );
+    };
+
+    const getNextAttackCoords = (x, y) => {
+      switch (currentHitDirection) {
+        case "up":
+          y--;
+          if (checkAttackCoords(x, y)) {
+            currentHitDirection = "down";
+            y++;
+          }
+          break;
+        case "down":
+          y++;
+          if (checkAttackCoords(x, y)) {
+            currentHitDirection = "left";
+            y--;
+          }
+          break;
+        case "left":
+          x--;
+          if (checkAttackCoords(x, y)) {
+            currentHitDirection = "right";
+            x++;
+          }
+          break;
+        case "right":
+          x++;
+          if (checkAttackCoords(x, y)) {
+            currentHitDirection = "up";
+            x--;
+          }
+          break;
+      }
+      return [x, y];
+    };
 
     let hasFoundGoodAttackCoords = false;
     let i = 0;
@@ -244,104 +289,50 @@ const makeComputerMove = () => {
         shipHitCoords = null;
         firstShipHitCoords = null;
       }
-      hasFoundGoodAttackCoords = true;
-      switch (currentHitDirection) {
-        case "up":
-          y--;
-          if (
-            y < 0 ||
-            player2.coordinatesAttacked.some(
-              (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
-            )
-          ) {
-            currentHitDirection = "down";
-            y++;
-            hasFoundGoodAttackCoords = false;
-          }
-          break;
-        case "down":
-          y++;
-          if (
-            y >= gridSize ||
-            player2.coordinatesAttacked.some(
-              (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
-            )
-          ) {
-            currentHitDirection = "left";
-            y--;
-            hasFoundGoodAttackCoords = false;
-          }
-          break;
-        case "left":
-          x--;
-          if (
-            x < 0 ||
-            player2.coordinatesAttacked.some(
-              (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
-            )
-          ) {
-            currentHitDirection = "right";
-            x++;
-            hasFoundGoodAttackCoords = false;
-          }
-          break;
-        case "right":
-          x++;
-          if (
-            x >= gridSize ||
-            player2.coordinatesAttacked.some(
-              (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
-            )
-          ) {
-            currentHitDirection = "up";
-            x--;
-            hasFoundGoodAttackCoords = false;
-          }
-          break;
-      }
+      [attackX, attackY] = getNextAttackCoords(attackX, attackY);
+      hasFoundGoodAttackCoords = !checkAttackCoords(attackX, attackY);
 
       if (!hasFoundGoodAttackCoords) {
-        // if we still have not found one then set x and y equal to the first ship hit location
         shipHitCoords = firstShipHitCoords;
+        [attackX, attackY] = firstShipHitCoords;
       }
     }
   } else {
-    let foundPossibleAttackCoords = false;
-
-    while (!foundPossibleAttackCoords) {
-      x = Math.floor(Math.random() * gridSize);
-      y = Math.floor(Math.random() * gridSize);
-      foundPossibleAttackCoords = true;
-
-      if (
-        player2.coordinatesAttacked.some(
+    const isAttackCoordsValid = (x, y) => {
+      return (
+        x >= 0 &&
+        x < gridSize &&
+        y >= 0 &&
+        y < gridSize &&
+        !player2.coordinatesAttacked.some(
           (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
         )
-      ) {
-        foundPossibleAttackCoords = false;
-      }
-    }
+      );
+    };
+
+    do {
+      attackX = Math.floor(Math.random() * gridSize);
+      attackY = Math.floor(Math.random() * gridSize);
+    } while (!isAttackCoordsValid(attackX, attackY));
   }
 
   // attack that location
-  player2.attackCoordinates(x, y);
+  player2.attackCoordinates(attackX, attackY);
 
   const squareAttacked = document.querySelector(
-    `[data-x="${x}"][data-y="${y}"].playerSquare`
+    `[data-x="${attackX}"][data-y="${attackY}"].playerSquare`
   );
 
-  if(player2.enemyBoard.hitAttacks.some(
-    (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
-  )){
-    HandleAttackHit(x,y,squareAttacked);
+  const isHit = (pos) =>
+    JSON.stringify(pos) === JSON.stringify([attackX, attackY]);
+
+  if (player2.enemyBoard.hitAttacks.some(isHit)) {
+    HandleAttackHit(attackX, attackY, squareAttacked);
   }
 
-  if(player2.enemyBoard.missedAttacks.some(
-    (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
-  )){
-    HandleAttackMiss(x,y,squareAttacked);
+  if (player2.enemyBoard.missedAttacks.some(isHit)) {
+    HandleAttackMiss(attackX, attackY, squareAttacked);
   }
-
 };
 
 const HandleAttackHit = (x, y, squareHit) => {
