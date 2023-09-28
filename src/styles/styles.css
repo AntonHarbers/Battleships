@@ -159,6 +159,7 @@ button:hover {
 
 .hit{
   background-color: red;
+  transition: 1s ease-in-out;
 }
 
 .missed{

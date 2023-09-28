@@ -1,4 +1,4 @@
-import { Ship, Gameboard, Player } from './battleships';
+import { Ship, Gameboard, Player } from '../battleships';
 
 describe('Ship class', () => {
   test('#constructor', () => {
