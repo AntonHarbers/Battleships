@@ -1,4 +1,4 @@
-import { gridSize } from "./vars";
+import { gridSize } from './vars';
 
 class Ship {
   constructor(name, length) {
@@ -36,7 +36,7 @@ class Gameboard {
     for (let x = 0; x < gridSize; x++) {
       this.board[x] = [];
       for (let y = 0; y < gridSize; y++) {
-        this.board[x][y] = "Empty";
+        this.board[x][y] = 'Empty';
         this.notYetAttacked.push([x, y]);
       }
     }
@@ -46,7 +46,7 @@ class Gameboard {
     for (let t = 0; t < length; t++) {
       if (
         this.board[isHorizontal ? x + t : x][isHorizontal ? y : y + t] !==
-        "Empty"
+        'Empty'
       ) {
         return false;
       }
@@ -69,12 +69,12 @@ class Gameboard {
 
     if (hasAlreadyHitPosition) return false;
 
-    if (this.board[x][y] !== "Empty") {
+    if (this.board[x][y] !== 'Empty') {
       this.hitAttacks.push([x, y]);
       this.board[x][y].hit();
     } else {
       this.missedAttacks.push([x, y]);
-      this.board[x][y] = "Missed";
+      this.board[x][y] = 'Missed';
     }
 
     this.notYetAttacked = this.notYetAttacked.filter(
@@ -96,11 +96,11 @@ class Player {
     this.gameboard = gameboard;
     this.enemyBoard = enemyBoard;
     this.ships = [
-      new Ship("Carrier", 5),
-      new Ship("Battleship", 4),
-      new Ship("Cruiser", 3),
-      new Ship("Submarine", 2),
-      new Ship("Destroyer", 2),
+      new Ship('Carrier', 5),
+      new Ship('Battleship', 4),
+      new Ship('Cruiser', 3),
+      new Ship('Submarine', 2),
+      new Ship('Destroyer', 2),
     ];
     this.activeShips = [];
     this.coordinatesAttacked = [];
@@ -122,4 +122,5 @@ class Player {
 }
 
 export { Ship, Gameboard, Player, gridSize };
+// for testing =
 // module.exports = { Ship, Gameboard, Player, gridSize };

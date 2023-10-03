@@ -1,5 +1,4 @@
-import { Gameboard, Player } from "./battleships.js";
-
+import { Gameboard, Player } from './battleships.js';
 
 const playerTurnDiv = document.getElementById('player-turn');
 const computerTurnDiv = document.getElementById('computer-turn');
@@ -11,7 +10,9 @@ const playerNameStat = document.querySelector('#player-name-stat');
 const playerBoard = document.querySelector('#player-board');
 const computerBoard = document.querySelector('#computer-board');
 const playerShipSelect = document.querySelector('#player-ships-select');
-const playerShipRotationBtn = document.querySelector("#player-ship-rotation-btn");
+const playerShipRotationBtn = document.querySelector(
+  '#player-ship-rotation-btn'
+);
 
 const gridSize = 10;
 
@@ -24,8 +25,7 @@ const player1 = new Player(
   player1board,
   player2board
 );
-const player2 = new Player("Computer", false, player2board, player1board);
-
+const player2 = new Player('Computer', false, player2board, player1board);
 
 export {
   playerTurnDiv,
