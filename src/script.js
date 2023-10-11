@@ -75,6 +75,9 @@ const StartGame = () => {
 
   shipPlacementPhase = true;
 
+  playerTurnDiv.textContent = `Place your ships`;
+  computerTurnDiv.textContent = '';
+
   player1.ships.forEach((ship) => {
     const option = document.createElement('option');
     option.text = ship.name;
@@ -114,19 +117,54 @@ const EndPlacementPhase = () => {
   playerShipRotationBtn.remove();
   playerShipSelect.remove();
   gamePhase = true;
-  player1.isTurn = false; //Math.random() * 10 > 5 ? true : false;
-  if (!player1.isTurn) {
+  player1.isTurn = Math.random() * 10 > 5 ? true : false;
+  player2.isTurn = !player1.isTurn;
+  NextTurn();
+  UpdateTurnUI();
+};
+
+const UpdateTurnUI = () => {
+  playerTurnDiv.style.display = player1.isTurn ? 'block' : 'none';
+  computerTurnDiv.style.display = player2.isTurn ? 'block' : 'none';
+  playerTurnDiv.textContent = player1.isTurn ? `Your turn` : '';
+  computerTurnDiv.textContent = player1.isTurn ? '' : `Computer's turn`;
+};
+
+const NextTurn = () => {
+  // check if game is over
+  if (player1.enemyBoard.allShipsSunk()) {
+    alert('Computer wins');
+    return;
+  }
+  if (player2.enemyBoard.allShipsSunk()) {
+    alert('Player wins');
+    return;
+  }
+
+  console.log('yes');
+
+  if (player1.isTurn) {
+    player1.isTurn = false;
     player2.isTurn = true;
     var index = 0;
     let incrementEveryHalfSecond = setInterval(function () {
       index++;
-      makeComputerMove();
-      if (index == 75) clearInterval(incrementEveryHalfSecond);
-    }, 500);
+      if (index == 1) {
+        makeComputerMove();
+        clearInterval(incrementEveryHalfSecond);
+      }
+    }, 1000);
+    let incrementNextTurn = setInterval(function () {
+      NextTurn();
+      clearInterval(incrementNextTurn);
+    }, 2000);
   } else {
+    player1.isTurn = true;
     player2.isTurn = false;
-    // player attack ui change
   }
+
+  // change ui to show whos turn it is
+  UpdateTurnUI();
 };
 
 // attack logic
@@ -137,8 +175,6 @@ const makeComputerMove = () => {
   let attackY;
 
   if (shipHitCoords !== null) {
-    console.log(shipHitCoords);
-
     [attackX, attackY] = shipHitCoords;
 
     const checkAttackCoords = (x, y) => {
@@ -349,9 +385,6 @@ const handlePlayerSquareMouseDown = (x, y) => {
       }"].playerSquare`
     );
     squareInShip.classList.add('ship');
-    player1board.board[shipRotationHorizontal ? x + length - 1 : x][
-      shipRotationHorizontal ? y : y + length - 1
-    ] = player1.ships[shipIndex];
     length--;
   }
 
@@ -382,11 +415,23 @@ const handlePlayerSquareMouseLeave = (x, y) => {
 
 const handleComputerSquareMouseDown = (x, y) => {
   if (!gamePhase) return;
-  //if(!player1.isTurn) return;
+  if (!player1.isTurn) return;
 
-  // check if its a hit
-  // if its a miss make it a miss image
-  // if its a hit make it a hit image
-  // when the ship is sunk
+  let incrementNextTurn = setInterval(function () {
+    NextTurn();
+    clearInterval(incrementNextTurn);
+  }, 1000);
+
+  // check if hit or miss and color accordingly
+  // hit turn into hit square
+  // miss turn into miss square
+  // ship is sunk then show the ship image overlayed onto its squares
+
+  // animation
+
+  // play sounds
+
+  // check if game is over in next turn function
+
   console.log(player2.gameboard.board[x][y]);
 };
