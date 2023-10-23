@@ -133,11 +133,11 @@ const UpdateTurnUI = () => {
 const NextTurn = () => {
   // check if game is over
   if (player1.enemyBoard.allShipsSunk()) {
-    alert('Computer wins');
+    alert('Player wins');
     return;
   }
   if (player2.enemyBoard.allShipsSunk()) {
-    alert('Player wins');
+    alert('Computer wins');
     return;
   }
 
@@ -309,6 +309,14 @@ const HandleAttackMiss = (x, y, squareMissed) => {
   squareMissed.classList.add('missed');
 };
 
+const HandlePlayerAttackHit = (x, y, squareHit) => {
+  squareHit.classList.add('hit');
+};
+
+const HandlePlayerAttackMiss = (x, y, squareMissed) => {
+  squareMissed.classList.add('missed');
+};
+
 const changeShipRotation = () => {
   shipRotationHorizontal = !shipRotationHorizontal;
 
@@ -417,21 +425,54 @@ const handleComputerSquareMouseDown = (x, y) => {
   if (!gamePhase) return;
   if (!player1.isTurn) return;
 
-  let incrementNextTurn = setInterval(function () {
-    NextTurn();
-    clearInterval(incrementNextTurn);
-  }, 1000);
+  const isAttackCoordsValid = (x, y) => {
+    return (
+      x >= 0 &&
+      x < gridSize &&
+      y >= 0 &&
+      y < gridSize &&
+      !player1.coordinatesAttacked.some(
+        (pos) => JSON.stringify(pos) === JSON.stringify([x, y])
+      )
+    );
+  };
+
+  if (!isAttackCoordsValid(x, y)) return;
 
   // check if hit or miss and color accordingly
-  // hit turn into hit square
-  // miss turn into miss square
-  // ship is sunk then show the ship image overlayed onto its squares
+
+  player1.attackCoordinates(x, y);
+
+  const squareAttacked = document.querySelector(
+    `[data-x="${x}"][data-y="${y}"].computerSquare`
+  );
+
+  const isHit = (pos) => JSON.stringify(pos) === JSON.stringify([x, y]);
+
+  if (player1.enemyBoard.hitAttacks.some(isHit)) {
+    HandlePlayerAttackHit(x, y, squareAttacked);
+
+    const shipAttacked = player1.enemyBoard.board[x][y];
+
+    console.log(shipAttacked);
+
+    if (shipAttacked.isSunk()) {
+      // check if all ships are sunk
+      if (player1.enemyBoard.allShipsSunk()) {
+        alert('Player wins');
+        return;
+      }
+    }
+  }
+
+  if (player1.enemyBoard.missedAttacks.some(isHit)) {
+    HandlePlayerAttackMiss(x, y, squareAttacked);
+  }
+
+  // update ui
 
   // animation
 
   // play sounds
-
-  // check if game is over in next turn function
-
-  console.log(player2.gameboard.board[x][y]);
+  NextTurn();
 };
