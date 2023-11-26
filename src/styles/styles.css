@@ -131,6 +131,7 @@ button:hover {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  overflow: visible;
 }
 
 .computerSquare:hover {
@@ -153,6 +154,7 @@ button:hover {
   background-image: url('../images/water.png');
   background-size: cover;
   background-repeat: no-repeat;
+  overflow: visible;
   background-position: center;
 }
 
@@ -166,22 +168,14 @@ button:hover {
   transition: 0.1s ease-in-out;
 }
 
-.shipHover {
-  background-color: green;
-  background-image: none;
-}
-
-.ship {
-  background-color: bisque;
-  background-image: none;
-}
-
 .hit {
   background-image: url('../images/hit.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
   transition: 1s ease-in-out;
+  z-index: 10;
+  opacity: 0.8;
 }
 
 .missed {
@@ -190,6 +184,7 @@ button:hover {
   background-repeat: no-repeat;
   background-position: center;
   transition: 1s ease-in-out;
+  z-index: 10;
 }
 
 select {
@@ -203,7 +198,7 @@ select {
 }
 
 #game-over-screen {
-  display: flex;
+  display: none;
   position: absolute;
   flex-direction: column;
   justify-content: center;
@@ -211,7 +206,7 @@ select {
   background-color: rgba(171, 171, 171, 0.426);
   width: 100vw;
   height: 100vh;
-  z-index: 1;
+  z-index: 100;
 }
 
 #game-over-text {
@@ -237,4 +232,35 @@ select {
 #restart-game-btn:active {
   background-color: #fff;
   color: #000;
+}
+
+.carrier,
+.battleship,
+.cruiser,
+.submarine,
+.destroyer {
+  background-repeat: no-repeat;
+  width: 50px;
+  z-index: 2;
+  position: relative;
+}
+
+.carrier {
+  background-image: url('../images/ships/Carrier.png');
+}
+
+.battleship {
+  background-image: url('../images/ships/Battleship.png');
+}
+
+.cruiser {
+  background-image: url('../images/ships/Cruiser.png');
+}
+
+.submarine {
+  background-image: url('../images/ships/Submarine.png');
+}
+
+.destroyer {
+  background-image: url('../images/ships/Destroyer.png');
 }

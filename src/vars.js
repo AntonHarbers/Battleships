@@ -13,7 +13,8 @@ const playerShipSelect = document.querySelector('#player-ships-select');
 const playerShipRotationBtn = document.querySelector(
   '#player-ship-rotation-btn'
 );
-
+const gameOverSection = document.querySelector('#game-over-screen');
+const restartGaemButton = document.querySelector('#restart-game-btn');
 const gridSize = 10;
 
 // variables
@@ -44,4 +45,6 @@ export {
   player2board,
   player1,
   player2,
+  gameOverSection,
+  restartGaemButton,
 };
