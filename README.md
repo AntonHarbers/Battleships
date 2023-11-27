@@ -2,7 +2,7 @@
 
 Test driven development practice implementing the battleships game using javascript, jest, html and css.
 
-[Live Link](https://www.google.com)
+[Live Link](https://antonharbers.github.io/odin-battleships/)
 
     (Monday)
     enemy ships appear behind enemy water, infront of enemy hit squares with opacity, when sunken increase opacity?

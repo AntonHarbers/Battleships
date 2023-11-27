@@ -150,8 +150,6 @@ const NextTurn = () => {
     return;
   }
 
-  console.log('yes');
-
   if (player1.isTurn) {
     player1.isTurn = false;
     player2.isTurn = true;
@@ -288,12 +286,17 @@ const makeComputerMove = () => {
 };
 
 const HandleAttackHit = (x, y, squareHit) => {
+  // play hit audio
+  document.getElementById('boomAudio').play();
   if (firstShipHitCoords == null) firstShipHitCoords = [x, y];
   shipHitCoords = [x, y];
 
   squareHit.classList.add('hit');
 
   if (player2.enemyBoard.board[x][y].sunk) {
+    setTimeout(() => {
+      document.getElementById('sunkShipAudio').play();
+    }, 100);
     shipHitCoords = null;
     const randomDir = Math.random() * 100;
     switch (true) {
@@ -315,14 +318,20 @@ const HandleAttackHit = (x, y, squareHit) => {
 };
 
 const HandleAttackMiss = (x, y, squareMissed) => {
+  // play miss audio
+  document.getElementById('missAudio').play();
   squareMissed.classList.add('missed');
 };
 
 const HandlePlayerAttackHit = (x, y, squareHit) => {
+  // play hit audio
+  document.getElementById('boomAudio').play();
   squareHit.classList.add('hit');
 };
 
 const HandlePlayerAttackMiss = (x, y, squareMissed) => {
+  // play miss audio
+  document.getElementById('missAudio').play();
   squareMissed.classList.add('missed');
 };
 
@@ -377,22 +386,22 @@ const handlePlayerSquareMouseEnter = (x, y) => {
       const shipDiv = document.createElement('div');
       shipDiv.classList.add(playerShipSelect.value.toLowerCase());
       shipDiv.style.height = initLength * 50 + 'px';
-      shipDiv.style.backgroundSize = `50px ${initLength * 50}px`;
+      shipDiv.style.backgroundSize = `40px ${initLength * 50}px`;
       squareInShip.appendChild(shipDiv);
       // rotate ship if vertical
       if (!shipRotationHorizontal) {
         shipDiv.style.transform = 'rotate(90deg)';
         if (initLength == 5) {
-          shipDiv.style.top = '-100px';
+          shipDiv.style.top = '-105px';
           shipDiv.style.left = '100px';
         } else if (initLength == 4) {
-          shipDiv.style.top = '-75px';
+          shipDiv.style.top = '-80px';
           shipDiv.style.left = '75px';
         } else if (initLength == 3) {
-          shipDiv.style.top = '-50px';
+          shipDiv.style.top = '-55px';
           shipDiv.style.left = '50px';
         } else {
-          shipDiv.style.top = '-25px';
+          shipDiv.style.top = '-30px';
           shipDiv.style.left = '25px';
         }
       }
@@ -404,6 +413,64 @@ const handlePlayerSquareMouseEnter = (x, y) => {
   // if the ship is horizontal, set the width to 100px * length, and the height to 100px
   // if the ship is vertical, set the width to 100px, and the height to 100px * length
 };
+
+function RenderComputerShip(shipName, shipLength) {
+  // find out the starting coords of the ship
+  let x;
+  let y;
+  let isHorizontal = false;
+  let shipFound = false;
+  player1.enemyBoard.board.forEach((row, rowIndex) => {
+    row.forEach((square, squareIndex) => {
+      console.log(square, squareIndex);
+      if (square.name == shipName && !shipFound) {
+        shipFound = true;
+        x = rowIndex;
+        y = squareIndex;
+      }
+    });
+  });
+
+  // check if ship is horizontal or vertical by checking which direction the next square is in
+  const squareRight = document.querySelector(
+    `[data-x="${x + 1}"][data-y="${y}"].computerSquare`
+  );
+
+  if (squareRight && squareRight.classList.contains('hit')) {
+    isHorizontal = true;
+  } else {
+    isHorizontal = false;
+  }
+
+  // highlight all the coordinates that would be occupied by the correct ship vertically or horizontally
+  const squareInShip = document.querySelector(
+    `[data-x="${x}"][data-y="${y}"].computerSquare`
+  );
+
+  // create a div, give it a class of ship, and append it to the first square, set the width and height to the correct size, and set the background image to the correct image
+  const shipDiv = document.createElement('div');
+  shipDiv.classList.add(`computer-${shipName.toLowerCase()}`);
+  shipDiv.style.height = shipLength * 50 + 'px';
+  shipDiv.style.backgroundSize = `50px ${shipLength * 50}px`;
+  squareInShip.appendChild(shipDiv);
+  // rotate ship if vertical
+  if (!isHorizontal) {
+    shipDiv.style.transform = 'rotate(90deg)';
+    if (shipLength == 5) {
+      shipDiv.style.top = '-105px';
+      shipDiv.style.left = '100px';
+    } else if (shipLength == 4) {
+      shipDiv.style.top = '-80px';
+      shipDiv.style.left = '75px';
+    } else if (shipLength == 3) {
+      shipDiv.style.top = '-55px';
+      shipDiv.style.left = '50px';
+    } else {
+      shipDiv.style.top = '-30px';
+      shipDiv.style.left = '25px';
+    }
+  }
+}
 
 const handlePlayerSquareMouseDown = (x, y) => {
   if (!shipPlacementPhase) return;
@@ -505,14 +572,24 @@ const handleComputerSquareMouseDown = (x, y) => {
 
     const shipAttacked = player1.enemyBoard.board[x][y];
 
-    console.log(shipAttacked);
+    let shipHitIsHorizontal = false;
+    // check if ship is horizontal or vertical by checking which direction the next square is in
+    const squareRight = document.querySelector(
+      `[data-x="${x + 1}"][data-y="${y}"].computerSquare`
+    );
 
-    if (shipAttacked.isSunk()) {
+    if (squareRight && squareRight.classList.contains('hit')) {
+      shipHitIsHorizontal = true;
+    } else {
+      shipHitIsHorizontal = false;
+    }
+
+    if (shipAttacked.sunk) {
       // check if all ships are sunk
-      if (player1.enemyBoard.allShipsSunk()) {
-        alert('Player wins');
-        return;
-      }
+      RenderComputerShip(shipAttacked.name, shipAttacked.length);
+      setTimeout(() => {
+        document.getElementById('sunkShipAudio').play();
+      }, 100);
     }
   }
 

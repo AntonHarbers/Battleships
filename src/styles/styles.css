@@ -158,6 +158,14 @@ button:hover {
   background-position: center;
 }
 
+.hit {
+  background-image: url('../images/hit.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  overflow: visible;
+}
+
 .red {
   cursor: pointer;
   background-image: url('../images/hover.png');
@@ -168,23 +176,11 @@ button:hover {
   transition: 0.1s ease-in-out;
 }
 
-.hit {
-  background-image: url('../images/hit.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  transition: 1s ease-in-out;
-  z-index: 10;
-  opacity: 0.8;
-}
-
 .missed {
   background-image: url('../images/miss.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  transition: 1s ease-in-out;
-  z-index: 10;
 }
 
 select {
@@ -234,33 +230,53 @@ select {
   color: #000;
 }
 
+.computer-carrier,
+.computer-battleship,
+.computer-cruiser,
+.computer-submarine,
+.computer-destroyer {
+  background-repeat: no-repeat;
+  width: 40px;
+  z-index: 2;
+  position: relative;
+  user-select: none;
+  opacity: 1;
+}
+
 .carrier,
 .battleship,
 .cruiser,
 .submarine,
 .destroyer {
   background-repeat: no-repeat;
-  width: 50px;
+  width: 40px;
+  background-position: 5px 0px;
   z-index: 2;
   position: relative;
+  opacity: 1;
 }
 
-.carrier {
+.carrier,
+.computer-carrier {
   background-image: url('../images/ships/Carrier.png');
 }
 
-.battleship {
+.battleship,
+.computer-battleship {
   background-image: url('../images/ships/Battleship.png');
 }
 
-.cruiser {
+.cruiser,
+.computer-cruiser {
   background-image: url('../images/ships/Cruiser.png');
 }
 
-.submarine {
+.submarine,
+.computer-submarine {
   background-image: url('../images/ships/Submarine.png');
 }
 
-.destroyer {
+.destroyer,
+.computer-destroyer {
   background-image: url('../images/ships/Destroyer.png');
 }
