@@ -33,9 +33,6 @@ let firstShipHitCoords = null;
 let shipHitCoords = null;
 let currentHitDirection = 'up';
 
-// remove before production
-playerNameInput.value = 'Tony';
-
 // event listeners
 startGameButton.addEventListener('click', () => {
   StartGame();
@@ -164,7 +161,7 @@ const NextTurn = () => {
     let incrementNextTurn = setInterval(function () {
       NextTurn();
       clearInterval(incrementNextTurn);
-    }, 2000);
+    }, 1050);
   } else {
     player1.isTurn = true;
     player2.isTurn = false;

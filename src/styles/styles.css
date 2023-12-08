@@ -8,9 +8,10 @@ body {
   width: 100vw;
   background-color: #000;
   color: #fff;
-  font-family: 'Press Start 2P', cursive;
+  font-family: 'Rubik Mono One', monospace;
   font-size: 24px;
   display: flex;
+  user-select: none;
 }
 
 #container {
@@ -18,9 +19,36 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: rgb(2, 15, 56);
+  /* change the linear gradient colors to look more wave like with the animation */
+  background: linear-gradient(
+    180deg,
+    rgb(0, 21, 78) 0%,
+    rgb(0, 25, 106) 20%,
+    rgb(0, 36, 156) 40%,
+    rgb(0, 220, 202) 75%,
+    white 80%,
+
+    rgb(255, 235, 104) 85%
+  );
   border: 1px solid black;
   flex-grow: 1;
+  animation: backgroundLinearGradientWaveEffect 10s ease-in-out infinite;
+  background-size: 400% 400%;
+  background-position: 0% 0%;
+  transition: all 0.2s ease-in-out;
+}
+
+@keyframes backgroundLinearGradientWaveEffect {
+  /* update the current linear gradient of container so it looks like its moving up and down */
+  0% {
+    background-position: 0% 100%;
+  }
+  50% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
 }
 
 #menu-screen {
@@ -50,33 +78,73 @@ body {
   flex-grow: 1;
 }
 
+h1 {
+  font-size: 4rem;
+  margin-bottom: 2rem;
+  text-shadow: 0px 0px 10px #000;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-shadow: 0px 0px 10px #000;
+}
+
 input[type='text'] {
   padding: 1rem 2rem;
-  border: 1px solid black;
+  border: 0px;
   background-color: #fff;
   border-radius: 10px;
   margin-bottom: 1rem;
   text-align: center;
   font-size: 24px;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type='text']:focus {
+  outline: none;
+  box-shadow: 0px 0px 20px #00fff7;
+}
+
+input[type='text']::placeholder {
+  color: #000;
+  opacity: 0.5;
 }
 
 button {
   padding: 1rem 2rem;
-  border: 1px solid black;
-  background-color: #fff;
+  border: 0px solid black;
+  background-color: #94d8ff;
   border-radius: 10px;
   font-size: 24px;
+  color: black;
+  box-shadow: 0px 0px 2px black;
+  transition: all 0.1s ease-in-out;
+  transform: scale(1);
 }
 
-button:hover {
-  background-color: #000;
+button:hover,
+button:focus {
   color: #fff;
   cursor: pointer;
+  box-shadow: 0px 0px 20px #00fff7;
+  transform: scale(1.1);
+  outline: none;
+}
+
+button:active {
+  background-color: #fff;
+  color: #000;
+  box-shadow: 0px 0px 20px white;
+  transform: scale(0.8);
 }
 
 #game-board {
   display: flex;
   justify-content: center;
+  align-items: start;
+  margin-top: 5rem;
   gap: 10rem;
   width: 100%;
   flex-grow: 3;
@@ -87,11 +155,12 @@ button:hover {
 }
 
 #game-info {
-  padding-top: 2rem;
+  margin-top: 5rem;
   display: flex;
-  justify-content: space-evenly;
   width: 100%;
+  justify-content: center;
   flex-grow: 1;
+  gap: 10rem;
 }
 
 #player-info {
@@ -99,6 +168,7 @@ button:hover {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 500px;
 }
 
 #computer-info {
@@ -106,6 +176,45 @@ button:hover {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 500px;
+}
+
+@media (max-width: 1000px) {
+  #game-screen {
+    padding-top: 10px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  #game-board {
+    justify-content: center;
+    align-items: center;
+    gap: 5rem;
+    padding-bottom: 0px;
+    margin-top: 0px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  #game-info {
+    gap: 0.1rem;
+    font-size: 1rem;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 0rem;
+    padding-bottom: 2rem;
+  }
+  #player-info {
+    width: 100%;
+  }
+
+  #computer-info {
+    width: 100%;
+  }
 }
 
 .board {
@@ -119,7 +228,6 @@ button:hover {
 .grid {
   width: 500px;
   height: 500px;
-  border: 1px solid pink;
   display: flex;
   flex-wrap: wrap;
 }
@@ -279,4 +387,24 @@ select {
 .destroyer,
 .computer-destroyer {
   background-image: url('../images/ships/Destroyer.png');
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
