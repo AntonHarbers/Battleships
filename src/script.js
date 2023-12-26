@@ -7,20 +7,23 @@ import {
   gameScreen,
   playerNameInput,
   playerNameStat,
-  playerBoard,
-  computerBoard,
   playerShipSelect,
   playerShipRotationBtn,
   gridSize,
   player1board,
-  player2board,
   player1,
   player2,
   gameOverSection,
   restartGaemButton,
 } from './vars.js';
 import { renderBoards } from './rendering';
-import { IsPositionFree, placeShipsRandomly } from './helpers';
+import {
+  CreateShipDiv,
+  GetCurrentShipLength,
+  IsPositionFree,
+  RotateShip,
+  placeShipsRandomly,
+} from './helpers';
 
 // Variables
 let playerSquares = [];
@@ -77,7 +80,6 @@ const StartGame = () => {
   // start player ships placement phase
 
   shipPlacementPhase = true;
-
   playerTurnDiv.textContent = `Place your ships`;
   computerTurnDiv.textContent = '';
 
@@ -323,22 +325,22 @@ const HandleAttackMiss = (x, y, squareMissed) => {
 const HandlePlayerAttackHit = (x, y, squareHit) => {
   // play hit audio
   document.getElementById('boomAudio').play();
+  squareHit.classList.remove('red');
   squareHit.classList.add('hit');
 };
 
 const HandlePlayerAttackMiss = (x, y, squareMissed) => {
   // play miss audio
   document.getElementById('missAudio').play();
+  squareMissed.classList.remove('red');
   squareMissed.classList.add('missed');
 };
 
 const changeShipRotation = () => {
   shipRotationHorizontal = !shipRotationHorizontal;
-
   playerShipRotationBtn.textContent = `Rotation: ${
     shipRotationHorizontal ? 'Horizontal' : 'Vertical'
   }`;
-
   playerSquares.forEach((square) => {
     square.classList.remove('red');
   });
@@ -348,71 +350,53 @@ const changeShipRotation = () => {
 
 const handlePlayerSquareMouseEnter = (x, y) => {
   if (!shipPlacementPhase) return;
-  // figure out the length of the currently selected ship option
-  let length;
-  player1.ships.forEach((ship) => {
-    if (ship.name == playerShipSelect.value) {
-      length = ship.length;
-    }
-  });
-  if (shipRotationHorizontal && x + length > gridSize) return;
-  if (!shipRotationHorizontal && y + length > gridSize) return;
+
+  let currentShipLength = GetCurrentShipLength(
+    player1.ships,
+    playerShipSelect.value
+  );
+
+  if (
+    (shipRotationHorizontal && x + currentShipLength > gridSize) ||
+    (!shipRotationHorizontal && y + currentShipLength > gridSize)
+  )
+    return;
+
   let freePositionFound = IsPositionFree(
     x,
     y,
-    length,
+    currentShipLength,
     shipRotationHorizontal,
     player1board
   );
   if (!freePositionFound) return;
 
-  let initLength = length;
+  let initLength = currentShipLength;
   // highlight all the coordinates that would be occupied by the correct ship vertically or horizontally
-  while (length > 0) {
+  while (currentShipLength > 0) {
     const squareInShip = document.querySelector(
-      `[data-x="${shipRotationHorizontal ? x + length - 1 : x}"][data-y="${
-        shipRotationHorizontal ? y : y + length - 1
+      `[data-x="${
+        shipRotationHorizontal ? x + currentShipLength - 1 : x
+      }"][data-y="${
+        shipRotationHorizontal ? y : y + currentShipLength - 1
       }"].playerSquare`
     );
-    squareInShip.classList.add('red');
 
-    // here we need to figure out which ship it is, then grab the image from the images folder, and overlay it on the correct squares
-
-    if (length == 1) {
-      // create a div, give it a class of ship, and append it to the first square, set the width and height to the correct size, and set the background image to the correct image
-      const shipDiv = document.createElement('div');
-      shipDiv.classList.add(playerShipSelect.value.toLowerCase());
-      shipDiv.style.height = initLength * 50 + 'px';
-      shipDiv.style.backgroundSize = `40px ${initLength * 50}px`;
+    if (currentShipLength == 1) {
+      const shipDiv = CreateShipDiv(
+        initLength,
+        playerShipSelect.value.toLowerCase(),
+        true
+      );
       squareInShip.appendChild(shipDiv);
-      // rotate ship if vertical
-      if (!shipRotationHorizontal) {
-        shipDiv.style.transform = 'rotate(90deg)';
-        if (initLength == 5) {
-          shipDiv.style.top = '-105px';
-          shipDiv.style.left = '100px';
-        } else if (initLength == 4) {
-          shipDiv.style.top = '-80px';
-          shipDiv.style.left = '75px';
-        } else if (initLength == 3) {
-          shipDiv.style.top = '-55px';
-          shipDiv.style.left = '50px';
-        } else {
-          shipDiv.style.top = '-30px';
-          shipDiv.style.left = '25px';
-        }
-      }
+      RotateShip(shipDiv, shipRotationHorizontal, initLength);
     }
 
-    length--;
+    currentShipLength--;
   }
-
-  // if the ship is horizontal, set the width to 100px * length, and the height to 100px
-  // if the ship is vertical, set the width to 100px, and the height to 100px * length
 };
 
 function RenderComputerShip(shipName, shipLength) {
-  // find out the starting coords of the ship
   let x;
   let y;
   let isHorizontal = false;
@@ -444,29 +428,13 @@ function RenderComputerShip(shipName, shipLength) {
     `[data-x="${x}"][data-y="${y}"].computerSquare`
   );
 
-  // create a div, give it a class of ship, and append it to the first square, set the width and height to the correct size, and set the background image to the correct image
-  const shipDiv = document.createElement('div');
-  shipDiv.classList.add(`computer-${shipName.toLowerCase()}`);
-  shipDiv.style.height = shipLength * 50 + 'px';
-  shipDiv.style.backgroundSize = `50px ${shipLength * 50}px`;
+  const shipDiv = CreateShipDiv(
+    shipLength,
+    `computer-${shipName.toLowerCase()}`,
+    false
+  );
   squareInShip.appendChild(shipDiv);
-  // rotate ship if vertical
-  if (!isHorizontal) {
-    shipDiv.style.transform = 'rotate(90deg)';
-    if (shipLength == 5) {
-      shipDiv.style.top = '-105px';
-      shipDiv.style.left = '100px';
-    } else if (shipLength == 4) {
-      shipDiv.style.top = '-80px';
-      shipDiv.style.left = '75px';
-    } else if (shipLength == 3) {
-      shipDiv.style.top = '-55px';
-      shipDiv.style.left = '50px';
-    } else {
-      shipDiv.style.top = '-30px';
-      shipDiv.style.left = '25px';
-    }
-  }
+  RotateShip(shipDiv, isHorizontal, shipLength);
 }
 
 const handlePlayerSquareMouseDown = (x, y) => {
@@ -519,6 +487,7 @@ const handlePlayerSquareMouseDown = (x, y) => {
     playerShipSelect.value = player1.ships[0].name;
   }
 };
+
 const handlePlayerSquareMouseLeave = (x, y) => {
   if (!shipPlacementPhase) return;
 
@@ -594,10 +563,5 @@ const handleComputerSquareMouseDown = (x, y) => {
     HandlePlayerAttackMiss(x, y, squareAttacked);
   }
 
-  // update ui
-
-  // animation
-
-  // play sounds
   NextTurn();
 };

@@ -1,3 +1,5 @@
+@import url('scrollbar.css');
+
 * {
   margin: 0;
   padding: 0;
@@ -12,73 +14,11 @@ body {
   font-size: 24px;
   display: flex;
   user-select: none;
+  overflow: hidden;
 }
 
-#container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  /* change the linear gradient colors to look more wave like with the animation */
-  background: linear-gradient(
-    180deg,
-    rgb(0, 21, 78) 0%,
-    rgb(0, 25, 106) 20%,
-    rgb(0, 36, 156) 40%,
-    rgb(0, 220, 202) 75%,
-    white 80%,
-
-    rgb(255, 235, 104) 85%
-  );
-  border: 1px solid black;
-  flex-grow: 1;
-  animation: backgroundLinearGradientWaveEffect 10s ease-in-out infinite;
-  background-size: 400% 400%;
-  background-position: 0% 0%;
-  transition: all 0.2s ease-in-out;
-}
-
-@keyframes backgroundLinearGradientWaveEffect {
-  /* update the current linear gradient of container so it looks like its moving up and down */
-  0% {
-    background-position: 0% 100%;
-  }
-  50% {
-    background-position: 0% 0%;
-  }
-  100% {
-    background-position: 0% 100%;
-  }
-}
-
-#menu-screen {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(171, 171, 171, 0.426);
-  width: 100%;
-  flex-grow: 1;
-}
-
-#menu-buttons {
-  margin: 2rem;
-  display: flex;
-  flex-direction: column;
-}
-
-#game-screen {
-  display: none;
-  padding-top: 50px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(171, 171, 171, 0.426);
-  width: 100%;
-  flex-grow: 1;
-}
-
-h1 {
+h1,
+h2 {
   font-size: 4rem;
   margin-bottom: 2rem;
   text-shadow: 0px 0px 10px #000;
@@ -86,8 +26,6 @@ h1 {
 
 h2 {
   font-size: 2rem;
-  margin-bottom: 2rem;
-  text-shadow: 0px 0px 10px #000;
 }
 
 input[type='text'] {
@@ -122,15 +60,15 @@ button {
   box-shadow: 0px 0px 2px black;
   transition: all 0.1s ease-in-out;
   transform: scale(1);
+  cursor: pointer;
+  outline: none;
 }
 
 button:hover,
 button:focus {
   color: #fff;
-  cursor: pointer;
   box-shadow: 0px 0px 20px #00fff7;
   transform: scale(1.1);
-  outline: none;
 }
 
 button:active {
@@ -140,81 +78,14 @@ button:active {
   transform: scale(0.8);
 }
 
-#game-board {
-  display: flex;
-  justify-content: center;
-  align-items: start;
-  margin-top: 5rem;
-  gap: 10rem;
-  width: 100%;
-  flex-grow: 3;
-  flex-wrap: wrap;
-  overflow-y: scroll;
-  height: 80vh;
-  padding-bottom: 100px;
-}
-
-#game-info {
-  margin-top: 5rem;
-  display: flex;
-  width: 100%;
-  justify-content: center;
-  flex-grow: 1;
-  gap: 10rem;
-}
-
-#player-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 500px;
-}
-
-#computer-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 500px;
-}
-
-@media (max-width: 1000px) {
-  #game-screen {
-    padding-top: 10px;
-  }
-
-  h1 {
-    font-size: 2rem;
-  }
-  h2 {
-    font-size: 1.5rem;
-  }
-  #game-board {
-    justify-content: center;
-    align-items: center;
-    gap: 5rem;
-    padding-bottom: 0px;
-    margin-top: 0px;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-  }
-  #game-info {
-    gap: 0.1rem;
-    font-size: 1rem;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    margin-top: 0rem;
-    padding-bottom: 2rem;
-  }
-  #player-info {
-    width: 100%;
-  }
-
-  #computer-info {
-    width: 100%;
-  }
+select {
+  padding: 1rem 2rem;
+  border: 1px solid black;
+  background-color: #fff;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 24px;
 }
 
 .board {
@@ -232,117 +103,58 @@ button:active {
   flex-wrap: wrap;
 }
 
-.computerSquare {
-  width: 50px;
-  height: 50px;
-  background-image: url('../images/water.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  overflow: visible;
-}
-
-.computerSquare:hover {
-  background-image: url('../images/hover.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  cursor: pointer;
-  transition: 0.2s ease-in-out;
-}
-
-.computerSquare:active {
-  background-color: red;
-  background-image: none;
-}
-
+.computerSquare,
 .playerSquare {
   width: 50px;
   height: 50px;
   background-image: url('../images/water.png');
   background-size: cover;
   background-repeat: no-repeat;
-  overflow: visible;
-  background-position: center;
-}
-
-.hit {
-  background-image: url('../images/hit.png');
-  background-size: cover;
-  background-repeat: no-repeat;
   background-position: center;
   overflow: visible;
-}
-
-.red {
+  transition: 0.2s ease-in-out;
   cursor: pointer;
-  background-image: url('../images/hover.png');
-  background-color: red;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  transition: 0.1s ease-in-out;
 }
 
-.missed {
+.computerSquare:hover {
+  background-image: url('../images/hover.png');
+}
+
+.playerSquare {
+  background-image: url('../images/water.png');
+  cursor: default;
+}
+
+.missed,
+.hit,
+.red {
   background-image: url('../images/miss.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
 }
 
-select {
-  padding: 1rem 2rem;
-  border: 1px solid black;
-  background-color: #fff;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-  text-align: center;
-  font-size: 24px;
-}
-
-#game-over-screen {
-  display: none;
-  position: absolute;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(171, 171, 171, 0.426);
-  width: 100vw;
-  height: 100vh;
-  z-index: 100;
-}
-
-#game-over-text {
-  font-size: 48px;
-  margin-bottom: 2rem;
-}
-
-#restart-game-btn {
-  padding: 1rem 2rem;
-  border: 1px solid black;
-  background-color: #fff;
-  border-radius: 10px;
-  font-size: 24px;
-  margin-bottom: 2rem;
-}
-
-#restart-game-btn:hover {
-  background-color: #000;
-  color: #fff;
+.red {
   cursor: pointer;
+  background-image: url('../images/hover.png');
+  transition: 0.1s ease-in-out;
 }
 
-#restart-game-btn:active {
-  background-color: #fff;
-  color: #000;
+.hit {
+  background-image: url('../images/hit.png');
+  overflow: visible;
 }
 
 .computer-carrier,
 .computer-battleship,
 .computer-cruiser,
 .computer-submarine,
-.computer-destroyer {
+.computer-destroyer,
+.carrier,
+.battleship,
+.cruiser,
+.submarine,
+.destroyer {
   background-repeat: no-repeat;
   width: 40px;
   z-index: 2;
@@ -356,12 +168,7 @@ select {
 .cruiser,
 .submarine,
 .destroyer {
-  background-repeat: no-repeat;
-  width: 40px;
   background-position: 5px 0px;
-  z-index: 2;
-  position: relative;
-  opacity: 1;
 }
 
 .carrier,
@@ -389,22 +196,170 @@ select {
   background-image: url('../images/ships/Destroyer.png');
 }
 
-/* width */
-::-webkit-scrollbar {
-  width: 10px;
+#container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(
+    180deg,
+    rgb(0, 21, 78) 0%,
+    rgb(0, 25, 106) 20%,
+    rgb(0, 36, 156) 40%,
+    rgb(0, 220, 202) 75%,
+    white 80%,
+
+    rgb(255, 235, 104) 85%
+  );
+  border: 1px solid black;
+  flex-grow: 1;
+  animation: backgroundLinearGradientWaveEffect 10s ease-in-out infinite;
+  background-size: 400% 400%;
+  background-position: 0% 0%;
+  transition: all 0.2s ease-in-out;
 }
 
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
+#menu-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(171, 171, 171, 0.426);
+  width: 100%;
+  flex-grow: 1;
 }
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888;
+#menu-buttons {
+  margin: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+#game-screen {
+  display: none;
+  padding-top: 50px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5rem;
+  align-items: center;
+  background-color: rgba(171, 171, 171, 0.426);
+  width: 100%;
+  flex-grow: 1;
+}
+
+#game-board {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  gap: 10rem;
+  width: 100%;
+  flex-grow: 3;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  height: 75vh;
+}
+
+#game-info {
+  margin-top: 5rem;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  flex-grow: 1;
+  gap: 10rem;
+}
+
+#player-info,
+#computer-info,
+#game-over-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 500px;
+}
+
+#game-over-screen {
+  display: none;
+  position: absolute;
+  background-color: rgba(171, 171, 171, 0.426);
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+}
+
+#game-over-text {
+  font-size: 48px;
+  margin-bottom: 2rem;
+}
+
+#restart-game-btn {
+  padding: 1rem 2rem;
+  border: 1px solid black;
+  background-color: #fff;
+  border-radius: 10px;
+  font-size: 24px;
+  margin-bottom: 2rem;
+}
+
+#restart-game-btn:hover,
+#restart-game-btn:focus {
+  background-color: #000;
+  color: #fff;
+  cursor: pointer;
+}
+
+#restart-game-btn:active {
+  background-color: #fff;
+  color: #000;
+}
+
+@media (max-width: 1000px) {
+  #game-screen {
+    padding-top: 10px;
+    gap: 0rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  #game-board {
+    justify-content: center;
+    align-items: center;
+    gap: 5rem;
+    margin-top: 0px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  #game-info {
+    gap: 0.1rem;
+    font-size: 1rem;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 0rem;
+    padding-bottom: 2rem;
+  }
+
+  #player-info,
+  #computer-info {
+    width: 100%;
+  }
+}
+
+@keyframes backgroundLinearGradientWaveEffect {
+  0% {
+    background-position: 0% 100%;
+  }
+  50% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
 }

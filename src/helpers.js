@@ -7,7 +7,6 @@ const placeShipsRandomly = (player, gridSize) => {
     );
 
     player.gameboard.placeShip(ship.name, ship.length, x, y, isHorizontal);
-
     player.activeShips.push(ship);
   }
 
@@ -32,15 +31,11 @@ const findPossibleShipCoordinates = (board, ship, gridSize) => {
 
     if (isHorizontal) {
       for (const i of Array(ship.length).keys()) {
-        if (board.board[x + i][y] !== 'Empty') {
-          freePositionFound = false;
-        }
+        if (board.board[x + i][y] !== 'Empty') freePositionFound = false;
       }
     } else {
       for (const i of Array(ship.length).keys()) {
-        if (board.board[x][y + i] !== 'Empty') {
-          freePositionFound = false;
-        }
+        if (board.board[x][y + i] !== 'Empty') freePositionFound = false;
       }
     }
   }
@@ -54,19 +49,62 @@ const IsPositionFree = (x, y, length, shipRotationHorizontal, player1board) => {
 
   if (shipRotationHorizontal) {
     for (const i of Array(length).keys()) {
-      if (player1board.board[checkX + i][checkY] !== 'Empty') {
-        return false;
-      }
+      if (player1board.board[checkX + i][checkY] !== 'Empty') return false;
     }
   } else {
     for (const i of Array(length).keys()) {
-      if (player1board.board[checkX][checkY + i] !== 'Empty') {
-        return false;
-      }
+      if (player1board.board[checkX][checkY + i] !== 'Empty') return false;
     }
   }
 
   return true;
 };
 
-export { IsPositionFree, placeShipsRandomly };
+function RotateShip(shipDiv, shipRotationHorizontal, initLength) {
+  if (!shipRotationHorizontal) {
+    shipDiv.style.transform = 'rotate(90deg)';
+    if (initLength == 5) {
+      shipDiv.style.top = '-105px';
+      shipDiv.style.left = '100px';
+    } else if (initLength == 4) {
+      shipDiv.style.top = '-80px';
+      shipDiv.style.left = '75px';
+    } else if (initLength == 3) {
+      shipDiv.style.top = '-55px';
+      shipDiv.style.left = '50px';
+    } else {
+      shipDiv.style.top = '-30px';
+      shipDiv.style.left = '25px';
+    }
+  }
+}
+
+function CreateShipDiv(initLength, className, isPlayer) {
+  const shipDiv = document.createElement('div');
+  shipDiv.classList.add(className);
+  shipDiv.style.height = initLength * 50 + 'px';
+  shipDiv.style.backgroundSize = `${isPlayer ? '40px' : '50px'} ${
+    initLength * 50
+  }px`;
+  return shipDiv;
+}
+
+const GetCurrentShipLength = (ships, playerShipSelectValue) => {
+  let length = 0;
+
+  ships.forEach((ship) => {
+    if (ship.name == playerShipSelectValue) {
+      length = ship.length;
+    }
+  });
+
+  return length;
+};
+
+export {
+  IsPositionFree,
+  placeShipsRandomly,
+  RotateShip,
+  CreateShipDiv,
+  GetCurrentShipLength,
+};

@@ -133,16 +133,16 @@ describe('Gameboard class', () => {
     test('Returns true if all ships have been sunk', () => {
       const board = new Gameboard();
       board.placeShip('Sub', 3, 5, 5, true);
-      board.receiveAttack(5,5);
-      board.receiveAttack(5,6);
-      board.receiveAttack(5,7);
+      board.receiveAttack(5, 5);
+      board.receiveAttack(5, 6);
+      board.receiveAttack(5, 7);
 
       expect(board.allShipsSunk()).toBe(true);
     });
     test('Returns false if all ships have not been sunk', () => {
-        const board = new Gameboard();
-        board.placeShip('Sub', 3, 5, 5, true);
-        expect(board.allShipsSunk()).toBe(false);
+      const board = new Gameboard();
+      board.placeShip('Sub', 3, 5, 5, true);
+      expect(board.allShipsSunk()).toBe(false);
     });
   });
 });
@@ -155,16 +155,16 @@ describe('Player Class', () => {
     expect(player1.coordinatesAttacked).toEqual([]);
     expect(player1.activeShips).toEqual([]);
     expect(player1.ships[0].name).toBe('Carrier');
-  })
+  });
 
-  describe('#makeRandomMove', () => {  
+  describe('#makeRandomMove', () => {
     test('Cannot make the same move multiple times', () => {
       const board = new Gameboard();
       const player = new Player('Test', true, board);
       const notTurnPlayer = new Player('Test1', false, board);
-      const attack1 = player.attackCoordinates(1,1);
-      const attack2 = player.attackCoordinates(1,1);
-      const notTurnAttack = notTurnPlayer.attackCoordinates(1,1);
+      const attack1 = player.attackCoordinates(1, 1);
+      const attack2 = player.attackCoordinates(1, 1);
+      const notTurnAttack = notTurnPlayer.attackCoordinates(1, 1);
 
       expect(attack1).toBe(true);
       expect(attack2).toBe(false);
@@ -174,9 +174,9 @@ describe('Player Class', () => {
     test('When making a move that hits a ship make sure ship takes a hit', () => {
       const board = new Gameboard();
       const player = new Player('Tester', true, board);
-      board.placeShip('Destroyer', 2, 5,5,true);
+      board.placeShip('Destroyer', 2, 5, 5, true);
       expect(board.ships[0].hits).toBe(0);
-      player.attackCoordinates(5,5);
+      player.attackCoordinates(5, 5);
       expect(board.ships[0].hits).toBe(1);
     });
 
@@ -184,8 +184,8 @@ describe('Player Class', () => {
       const board = new Gameboard();
       const player = new Player('Tester', true, board);
       expect(board.missedAttacks).toEqual([]);
-      player.attackCoordinates(1,2);
-      expect(board.missedAttacks).toEqual([[1,2]]);
+      player.attackCoordinates(1, 2);
+      expect(board.missedAttacks).toEqual([[1, 2]]);
     });
   });
 });
